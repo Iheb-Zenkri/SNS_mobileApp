@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sns_app/components/dialog_widget.dart';
 import 'package:sns_app/components/worker_tile.dart';
 import 'package:sns_app/models/Worker.dart';
 import 'package:sns_app/models/colors.dart';
@@ -16,21 +18,35 @@ class TeamPage extends StatefulWidget {
 class _TeamPageState extends State<TeamPage> {
 
   late Future<List<Worker>> futureWorkers ;
-  late Future<List<dynamic>> futireEquipments;
-
+  late Future<List<dynamic>> futureEquipments;
+  late Future<List<dynamic>> futureServiceGallery ;
   final List<String> choices = ['Equipe','Matériel','Gallery'];
   int selectedIndex = 0 ;
+
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>() ;
 
    @override
    void initState() {
     super.initState();
     futureWorkers = ApiService().fetchAllWorkers();
-    futireEquipments = ApiService().getAllEquipments();
+    futureEquipments = ApiService().getAllEquipments();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: selectedIndex != 2 ? FloatingActionButton.small(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        onPressed: (){
+          _showCreateServiceDialog(context) ;
+        },
+        backgroundColor: primaryColor,
+        focusColor: primaryColor200,
+        child: Icon(Iconsax.add,color: primaryColor100,),
+        ) : null,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,9 +157,7 @@ class _TeamPageState extends State<TeamPage> {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
-                        List<Worker> workers = [] ;
-                        workers.addAll(snapshot.data!);
-                        workers.addAll(snapshot.data!);
+                        List<Worker> workers = snapshot.data! ;
                         return ListView.builder(
                           itemCount: workers.isEmpty ? 1 : workers.length,
                           itemBuilder:(context, index) {
@@ -163,7 +177,7 @@ class _TeamPageState extends State<TeamPage> {
               child: Container(
                 margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                 child:FutureBuilder(
-                  future: futireEquipments, 
+                  future: futureEquipments, 
                   builder: (context,snapshot){
                     ////handling serveur delay or issue
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -221,7 +235,6 @@ class _TeamPageState extends State<TeamPage> {
                                         ),
                                       ),
                                       SizedBox(height: 5),
-                              
                                       // Image
                                       Center(
                                         child: SizedBox(
@@ -244,7 +257,6 @@ class _TeamPageState extends State<TeamPage> {
                                         ),
                                       ),
                                       SizedBox(height: 3),
-                              
                                       // Description
                                       Container(
                                         width: 150,
@@ -299,30 +311,16 @@ class _TeamPageState extends State<TeamPage> {
             ),
             ],
 
-            if(selectedIndex == 2)...[
+            if(selectedIndex == 4)...[
             Expanded(
               child: Container(
                 margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child:FutureBuilder(
-                  future: futureWorkers, 
-                  builder: (context,snapshot){
-                    ////handling serveur delay or issue
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      List<Worker> workers = [] ;
-                      workers.addAll(snapshot.data!);
-                      workers.addAll(snapshot.data!);
-                      return ListView.builder(
-                        itemCount: workers.isEmpty ? 1 : workers.length,
-                        itemBuilder:(context, index) {
-                          return Padding(
-                            padding: index == 0 ? EdgeInsets.only(top: 20): index == workers.length-1 ? EdgeInsets.only(bottom: 50,top: 10) : EdgeInsets.only(top: 10.0),
-                            child: WorkerTile(worker: workers[index]),
-                          );
-                        },);
-                  })
-                
+                child: FutureBuilder(
+                  future: futureServiceGallery, 
+                  builder:(context, snapshot) {
+                    return Container();
+                  },
+                )
               ),
             ),
             ],
@@ -330,6 +328,248 @@ class _TeamPageState extends State<TeamPage> {
         ),
      );
   }
-
+ 
+  void _showCreateServiceDialog(BuildContext context) async{
+   await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          alignment: Alignment.center,
+          insetAnimationCurve: Curves.bounceInOut,
+          insetAnimationDuration: Duration(milliseconds: 400),
+          child:SizedBox(
+            width: MediaQuery.sizeOf(context).width,
+            height: MediaQuery.sizeOf(context).height*0.5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if(selectedIndex ==0 )...[
+                  Container(
+                    padding: EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                    color: informationColor600,
+                    ),
+                    child: Center(
+                      child: Text(
+                          "NOUVEAU OUVRIER",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),),
+                    ),
+                  ),
+                  Container(
+                     padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10.0),
+                        bottomRight: Radius.circular(10.0),
+                      ),
+                      color: Colors.white
+                    ),
+                    width: MediaQuery.sizeOf(context).width,
+                    height: MediaQuery.sizeOf(context).height*0.4,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          /// fields for worker
+                          SizedBox(
+                            width: 250,
+                            height: 60,
+                            child: TextFormField(
+                              controller: _nameController,
+                              keyboardType: TextInputType.name,
+                              decoration: InputDecoration(
+                                labelText: "Nom et Prénom",
+                                labelStyle: TextStyle(
+                                  fontSize: 12,
+                                  letterSpacing: 1.5,
+                                  color: neutralColor200,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                filled: true,
+                                fillColor: colorFromHSV(220, 0.06, 1),
+                                suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
+                                focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                      gapPadding: 2.0,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor100,width: 1,),
+                                      gapPadding: 0,
+                                    ),
+                              ),
+                              style:  TextStyle(
+                                fontSize: 14,
+                                letterSpacing: 1.5,
+                                color: primaryColor700,
+                                fontWeight: FontWeight.bold
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Le champ ne peut pas être vide';
+                                }
+                                if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                                  return 'Uniquement des caractères alphabétiques';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 250,
+                            height: 60,
+                            child: TextFormField(
+                              controller: _phoneController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: "Téléphone",
+                                labelStyle: TextStyle(
+                                  fontSize: 12,
+                                  letterSpacing: 1.5,
+                                  color: neutralColor200,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                filled: true,
+                                fillColor: colorFromHSV(220, 0.06, 1),
+                                suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
+                                focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                      gapPadding: 2.0,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor100,width: 1,),
+                                      gapPadding: 0,
+                                    ),
+                              ),
+                              style:  TextStyle(
+                                fontSize: 14,
+                                letterSpacing: 1.5,
+                                color: primaryColor700,
+                                fontWeight: FontWeight.bold
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Le champ ne peut pas être vide';
+                                }
+                                if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
+                                  return 'Un numéro valide est à 8 chiffres';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          /// buttons
+                          GestureDetector(
+                            onTap: (){
+                              addWorker();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                              constraints: BoxConstraints(
+                                maxWidth: 200,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14.0),
+                                color: alertColor,
+                              ),
+                              child: Center(
+                                child: Text("Confirmer",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0
+                                ),),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  )
+            
+                ],
+                if(selectedIndex == 1)...[
+                  Container(
+                    padding: EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                    color: informationColor600,
+                    ),
+                    child: Center(
+                      child: Text(
+                          "NOUVEAU SERVICE",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          )
+        );
+      },
+    );
+  }
+  
+  void addWorker() async {
+    if(_formKey.currentState!.validate()){
+      final worker = Worker(id: 0, 
+        name: _nameController.text, 
+        phoneNumber: _phoneController.text,
+        isAvailable: true, 
+        isDeleted: false
+      );
+      ApiService().createWorker(worker).then((response) async {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return SuccessWidget(validationMessage:'Ouvrier ${_nameController.text} a été créé avec succés !' ,);
+                  },
+                );
+                Navigator.pop(context) ;
+            }else {
+                String errorMessage = "";
+              if (response.statusCode == 400) {
+                errorMessage = "Le Nom ou le Téléphone d'Ouvrier existe déja";
+              } else{
+                errorMessage = "Échec de la création d'Ouvrier. Veuillez réessayer." ;
+              }
+              await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertWidget(errorMessage: errorMessage,);
+                  },
+                );
+            }
+      });    
+    }
+  }
 
 }

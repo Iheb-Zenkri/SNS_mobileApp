@@ -209,6 +209,21 @@ Future<http.Response> deleteService(int serviceId) async {
     }
   }
 
+///post worker methode
+  Future<http.Response> createWorker(Worker worker) async {
+    final url =  Uri.parse('$_baseUrl/addWorker');
+    try{
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(worker.toJson()),
+      );
+      return response ;
+    }catch(e){
+      throw Exception('Failed to connect to the server: $e');
+    }
+  }
+
 //////////////////////////////////////////////////
 ////////// Equipement Data management ////////////
 //////////////////////////////////////////////////
