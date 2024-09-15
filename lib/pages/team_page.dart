@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sns_app/components/dialog_widget.dart';
 import 'package:sns_app/components/worker_tile.dart';
 import 'package:sns_app/models/Worker.dart';
@@ -26,6 +29,8 @@ class _TeamPageState extends State<TeamPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>() ;
+
+  File ? selectedImage ;
 
    @override
    void initState() {
@@ -340,7 +345,7 @@ class _TeamPageState extends State<TeamPage> {
           insetAnimationDuration: Duration(milliseconds: 400),
           child:SizedBox(
             width: MediaQuery.sizeOf(context).width,
-            height: MediaQuery.sizeOf(context).height*0.5,
+            height: selectedIndex == 0 ? MediaQuery.sizeOf(context).height*0.5 : MediaQuery.sizeOf(context).height*0.8,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -518,7 +523,7 @@ class _TeamPageState extends State<TeamPage> {
                     ),
                     child: Center(
                       child: Text(
-                          "NOUVEAU SERVICE",
+                          "NOUVEAU MATERIEL",
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             color: Colors.white,
@@ -528,6 +533,241 @@ class _TeamPageState extends State<TeamPage> {
                           ),),
                     ),
                   ),
+                  Container(
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10.0),
+                        bottomRight: Radius.circular(10.0),
+                      ),
+                      color: Colors.white
+                    ),
+                    width: MediaQuery.sizeOf(context).width,
+                    height: MediaQuery.sizeOf(context).height*0.6,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          /// fields for worker
+                          SizedBox(height: 20,),
+                          SizedBox(
+                            width: 250,
+                            height: 60,
+                            child: TextFormField(
+                              controller: _nameController,
+                              keyboardType: TextInputType.name,
+                              decoration: InputDecoration(
+                                labelText: "Titre",
+                                labelStyle: TextStyle(
+                                  fontSize: 12,
+                                  letterSpacing: 1.5,
+                                  color: neutralColor200,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                filled: true,
+                                fillColor: colorFromHSV(220, 0.06, 1),
+                                suffixIcon: Icon(Icons.title_rounded,size: 18,color: primaryColor,),
+                                focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                      gapPadding: 2.0,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor100,width: 1,),
+                                      gapPadding: 0,
+                                    ),
+                              ),
+                              style:  TextStyle(
+                                fontSize: 14,
+                                letterSpacing: 1.5,
+                                color: primaryColor700,
+                                fontWeight: FontWeight.bold
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Le champ ne peut pas être vide';
+                                }
+                                if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                                  return 'Uniquement des caractères alphabétiques';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 20,),
+                           SizedBox(
+                            width: 250,
+                            height: 100,
+                            child: TextFormField(
+                              maxLines: 4,
+                              textAlign: TextAlign.start,
+                              controller: _phoneController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: "Description",
+                                labelStyle: TextStyle(
+                                  fontSize: 12,
+                                  letterSpacing: 1.5,
+                                  color: neutralColor200,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                filled: true,
+                                fillColor: colorFromHSV(220, 0.06, 1),
+                                suffixIcon: Icon(Icons.description_rounded,size: 18,color: primaryColor,),
+                                
+                                focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                      gapPadding: 2.0,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(color: informationColor100,width: 1,),
+                                      gapPadding: 0,
+                                    ),
+                              ),
+                              style:  TextStyle(
+                                fontSize: 14,
+                                letterSpacing: 1.5,
+                                color: primaryColor700,
+                                fontWeight: FontWeight.bold
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Le champ ne peut pas être vide';
+                                }
+                                if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                                  return 'Uniquement des caractères alphabétiques';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                height: 60,
+                                child: TextFormField(
+                                  controller: _nameController,
+                                  keyboardType: TextInputType.name,
+                                  decoration: InputDecoration(
+                                    labelText: "Quantité",
+                                    labelStyle: TextStyle(
+                                      fontSize: 12,
+                                      letterSpacing: 1.5,
+                                      color: neutralColor200,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                    filled: true,
+                                    fillColor: colorFromHSV(220, 0.06, 1),
+                                    focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                          gapPadding: 2.0,
+                                        ),
+                                    enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          borderSide: BorderSide(color: informationColor100,width: 1,),
+                                          gapPadding: 0,
+                                        ),
+                                  ),
+                                  style:  TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: 1.5,
+                                    color: primaryColor700,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Le champ ne peut pas être vide';
+                                    }
+                                    if (!RegExp(r'^(100|[1-9][0-9]?)$').hasMatch(value)) {
+                                      return 'Un nombre compris entre 1 et 100';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              CustomPaint(
+                                painter: DashedBorderPainter(),
+                                child: GestureDetector(
+                                  onTap: (){
+                                    _pickImage();
+                                  },
+                                  child: Container(
+                                    height: 80,
+                                    width: 100,
+                                    color: informationColor100,
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                       if(selectedImage == null)...[ 
+                                        Text(
+                                          "AJOUTER",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            letterSpacing: 0,
+                                            fontWeight: FontWeight.bold,
+                                            color: primaryColor600,
+                                          ),),
+                                          Text(
+                                          "une photo",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            letterSpacing: 1,
+                                            fontWeight: FontWeight.bold,
+                                            color: primaryColor600,
+                                          ),),
+                                        ],
+                                        if(selectedImage != null) Image.file(selectedImage!),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          /// buttons
+                          SizedBox(height: 30,),
+                          GestureDetector(
+                            onTap: (){
+                              addWorker();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                              constraints: BoxConstraints(
+                                maxWidth: 200,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14.0),
+                                color: alertColor,
+                              ),
+                              child: Center(
+                                child: Text("Confirmer",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0
+                                ),),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  )
+            
                 ],
               ],
             ),
@@ -571,5 +811,70 @@ class _TeamPageState extends State<TeamPage> {
       });    
     }
   }
+  
+  Future _pickImage() async {
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if(returnedImage == null) return ;
+    setState(() {
+      selectedImage = File(returnedImage!.path);
+    });
+  }
 
+}
+
+class DashedBorderPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    double dashWidth = 7.0;
+    double dashSpace = 3.0;
+    final paint = Paint()
+      ..color = informationColor
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    var path = Path();
+
+    // Top side
+    double startX = 0;
+    while (startX < size.width) {
+      path.moveTo(startX, 0);
+      startX += dashWidth;
+      path.lineTo(startX, 0);
+      startX += dashSpace;
+    }
+
+    // Right side
+    double startY = 0;
+    while (startY < size.height) {
+      path.moveTo(size.width, startY);
+      startY += dashWidth;
+      path.lineTo(size.width, startY);
+      startY += dashSpace;
+    }
+
+    // Bottom side
+    startX = 0;
+    while (startX < size.width) {
+      path.moveTo(startX, size.height);
+      startX += dashWidth;
+      path.lineTo(startX, size.height);
+      startX += dashSpace;
+    }
+
+    // Left side
+    startY = 0;
+    while (startY < size.height) {
+      path.moveTo(0, startY);
+      startY += dashWidth;
+      path.lineTo(0, startY);
+      startY += dashSpace;
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
 }

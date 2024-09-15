@@ -172,7 +172,7 @@ Future<http.Response> deleteService(int serviceId) async {
       }
   
   }
-////
+
 /// update client methode
   Future<http.Response> updateClient(Client client) async {
   final url = Uri.parse('$_baseUrl/updateClient/${client.id}');
@@ -188,6 +188,19 @@ Future<http.Response> deleteService(int serviceId) async {
   }
 }
 
+//// delete service methode
+Future<http.Response> softDeleteWorker(int workerId) async {
+  final url = Uri.parse('$_baseUrl/softDeleteWorker/$workerId');
+  try {
+    final response = await http.delete(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    return response;
+  } catch (e) {
+    throw Exception('Failed to delete service: $e');
+  }
+}
 
 //////////////////////////////////////////////////
 //////////// Worker Data management //////////////
@@ -223,6 +236,22 @@ Future<http.Response> deleteService(int serviceId) async {
       throw Exception('Failed to connect to the server: $e');
     }
   }
+
+/// update client methode
+  Future<http.Response> updateWorker(Worker worker) async {
+  final url = Uri.parse('$_baseUrl/updateWorker/${worker.id}');
+  try {
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(worker.toJson()),
+    );
+    return response;
+  } catch (e) {
+    throw Exception('Failed to connect to the server: $e');
+  }
+}
+
 
 //////////////////////////////////////////////////
 ////////// Equipement Data management ////////////

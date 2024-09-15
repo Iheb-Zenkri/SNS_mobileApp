@@ -1,13 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sns_app/pages/landing_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-// ignore: avoid_web_libraries_in_flutter
+/*/ ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui_web' as ui;
 
+*///
+
 void main() {
+/*
  if (kIsWeb) {
     ui.platformViewRegistry.registerViewFactory(
       'plugins.flutter.io/google_maps',
@@ -21,7 +23,7 @@ void main() {
       },
     );
   }
-
+*/
   runApp(const MyApp());
 }
 

@@ -331,157 +331,155 @@ class _AddClientPage extends State<AddClientPage> {
             ),
             ],
             if(_isnew)...[
-                  Container(
-                    height: 350,
-                    width: 300,
-                    padding: EdgeInsets.all(15.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                             children: [
-                                    Text(
-                                    "Nouveau ",
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      letterSpacing: 2.0,
-                                      fontWeight: FontWeight.normal,
-                                      color: neutralColor200,
-                                    ),),
-                                    Text(
-                                      "CLIENT",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        letterSpacing: 3.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: informationColor600,
-                                      ),),
-                             ],
-                           ),
-                          
-                          TextFormField(
-                            controller: _nameController,
-                            keyboardType: TextInputType.name,
-                            decoration: InputDecoration(
-                              labelText: "Nom de Client",
-                              focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                    gapPadding: 2.0,
-                                  ),
-                              enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(color:informationColor100,width: 1,),
-                                    gapPadding: 0,
-                                  ),
-                              labelStyle: TextStyle(
-                                 fontSize: 12,
-                                letterSpacing: 1.5,
-                                color: neutralColor200,
-                                fontWeight: FontWeight.bold
+              Container(
+                height: 350,
+                width: 300,
+                padding: EdgeInsets.all(15.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                        Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                                Text(
+                                "Nouveau ",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  letterSpacing: 2.0,
+                                  fontWeight: FontWeight.normal,
+                                  color: neutralColor200,
+                                ),),
+                                Text(
+                                  "CLIENT",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    letterSpacing: 3.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: informationColor600,
+                                  ),),
+                          ],
+                        ),
+                      TextFormField(
+                        controller: _nameController,
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          labelText: "Nom de Client",
+                          focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                gapPadding: 2.0,
                               ),
-                              filled: true,
-                              fillColor: colorFromHSV(220, 0.06, 1),
-                              suffixIcon: Icon(Icons.person_rounded,size: 20,color: primaryColor,)
-                            ),
-                            style:  TextStyle(
-                              fontSize: 14,
-                              letterSpacing: 1.5,
-                              color: primaryColor700,
-                              fontWeight: FontWeight.bold
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez entrer le nom du client';
-                              }
-                              return null;
-                            },
-                                        ),
-                      
-                          TextFormField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              labelText: "Téléphone",
-                              labelStyle: TextStyle(
-                                 fontSize: 12,
-                                letterSpacing: 1.5,
-                                color: neutralColor200,
-                                fontWeight: FontWeight.bold
+                          enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide(color:informationColor100,width: 1,),
+                                gapPadding: 0,
                               ),
-                              filled: true,
-                              fillColor: colorFromHSV(220, 0.06, 1),
-                              suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
-                              focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                    gapPadding: 2.0,
-                                  ),
-                              enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(color: informationColor100,width: 1,),
-                                    gapPadding: 0,
-                                  ),
-                            ),
-                            style:  TextStyle(
-                              fontSize: 14,
-                              letterSpacing: 1.5,
-                              color: primaryColor700,
-                              fontWeight: FontWeight.bold
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez entrer le Téléphone du client';
-                              }
-                              return null;
-                            },
+                          labelStyle: TextStyle(
+                              fontSize: 12,
+                            letterSpacing: 1.5,
+                            color: neutralColor200,
+                            fontWeight: FontWeight.bold
                           ),
-                      
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              GestureDetector(
-                                onTap: (){
-                                  setState(() {
-                                    _isnew = false ;
-                                  });
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.fromLTRB(20,8,20,8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: alertColor,
-                                  ),
-                                  child: Text("Cancel",style: TextStyle(fontSize: 14,color:Colors.white),),
-                                ),
+                          filled: true,
+                          fillColor: colorFromHSV(220, 0.06, 1),
+                          suffixIcon: Icon(Icons.person_rounded,size: 20,color: primaryColor,)
+                        ),
+                        style:  TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 1.5,
+                          color: primaryColor700,
+                          fontWeight: FontWeight.bold
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Veuillez entrer le nom du client';
+                          }
+                          return null;
+                        },
+                                    ),
+                  
+                      TextFormField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          labelText: "Téléphone",
+                          labelStyle: TextStyle(
+                              fontSize: 12,
+                            letterSpacing: 1.5,
+                            color: neutralColor200,
+                            fontWeight: FontWeight.bold
+                          ),
+                          filled: true,
+                          fillColor: colorFromHSV(220, 0.06, 1),
+                          suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
+                          focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                gapPadding: 2.0,
                               ),
-                              GestureDetector(
-                                onTap: (){
-                                      _submitForm();
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.fromLTRB(20,8,20,8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: informationColor,
-                                  ),
-                                  child: Text("Créer",style: TextStyle(fontSize: 14,color:Colors.white),),
-                                ),
-                              )
-                            ],
+                          enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide(color: informationColor100,width: 1,),
+                                gapPadding: 0,
+                              ),
+                        ),
+                        style:  TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 1.5,
+                          color: primaryColor700,
+                          fontWeight: FontWeight.bold
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Veuillez entrer le Téléphone du client';
+                          }
+                          return null;
+                        },
+                      ),
+                  
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                _isnew = false ;
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(20,8,20,8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: alertColor,
+                              ),
+                              child: Text("Cancel",style: TextStyle(fontSize: 14,color:Colors.white),),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                                  _submitForm();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(20,8,20,8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: informationColor,
+                              ),
+                              child: Text("Créer",style: TextStyle(fontSize: 14,color:Colors.white),),
+                            ),
                           )
                         ],
-                      ),
-                    ),
-                  )
-                ]
-              
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ]
           ],
         ),
         if(_isSearching && !_isnew)...[
