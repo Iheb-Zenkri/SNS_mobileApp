@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:sns_app/models/Client.dart';
 import 'package:sns_app/models/Service.dart';
@@ -188,19 +189,6 @@ Future<http.Response> deleteService(int serviceId) async {
   }
 }
 
-//// delete service methode
-Future<http.Response> softDeleteWorker(int workerId) async {
-  final url = Uri.parse('$_baseUrl/softDeleteWorker/$workerId');
-  try {
-    final response = await http.delete(
-      url,
-      headers: {'Content-Type': 'application/json'},
-    );
-    return response;
-  } catch (e) {
-    throw Exception('Failed to delete service: $e');
-  }
-}
 
 //////////////////////////////////////////////////
 //////////// Worker Data management //////////////
@@ -237,7 +225,7 @@ Future<http.Response> softDeleteWorker(int workerId) async {
     }
   }
 
-/// update client methode
+/// update worker methode
   Future<http.Response> updateWorker(Worker worker) async {
   final url = Uri.parse('$_baseUrl/updateWorker/${worker.id}');
   try {
@@ -249,6 +237,20 @@ Future<http.Response> softDeleteWorker(int workerId) async {
     return response;
   } catch (e) {
     throw Exception('Failed to connect to the server: $e');
+  }
+}
+
+//// delete service methode
+Future<http.Response> softDeleteWorker(int workerId) async {
+  final url = Uri.parse('$_baseUrl/softDeleteWorker/$workerId');
+  try {
+    final response = await http.delete(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    return response;
+  } catch (e) {
+    throw Exception('Failed to delete service: $e');
   }
 }
 
@@ -279,5 +281,59 @@ Future<http.Response> softDeleteWorker(int workerId) async {
     return '';
   }
 }
+
+///post equipement methode
+  Future<http.Response> createEquipement(dynamic equipement) async {
+    final url =  Uri.parse('$_baseUrl/equipement');
+    try{
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(equipement),
+      );
+      return response ;
+    }catch(e){
+      throw Exception('Failed to connect to the server: $e');
+    }
+  }
+
+///post equipement image mthode
+   Future<http.StreamedResponse> uploadEquipementImage(int id, File? selectedImage) async {
+    print(id);
+    final url = Uri.parse('$_baseUrl/equipement/$id/image');
+    try{
+      var request = http.MultipartRequest('POST', url);
+      request.fields['title'] = "Static title" ;
+      if(selectedImage != null){
+        request.files.add(http.MultipartFile(
+          'image',
+          selectedImage.readAsBytes().asStream(),
+          await selectedImage.length(),
+          filename: selectedImage.path.split('/').last,
+        ));
+      }
+
+      final response = await request.send();
+       return response ;
+    }catch(e){
+      print('Exception : $e ');
+      throw Exception('Failed to connect to the server: $e');
+    }
+  }
+
+//// delete service methode
+Future<http.Response> deleteEquipement(int equipementId) async {
+  final url = Uri.parse('$_baseUrl/equipement/$equipementId');
+  try {
+    final response = await http.delete(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    return response;
+  } catch (e) {
+    throw Exception('Failed to delete service: $e');
+  }
+}
+
 
 }

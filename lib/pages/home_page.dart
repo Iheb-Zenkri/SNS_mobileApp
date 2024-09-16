@@ -30,12 +30,12 @@ class _AccueilPageState extends State<AccueilPage> {
   void initializeWebSocket() {
     webSocketService = WebSocketService();
     if(mounted){
-      /*webSocketService.connect();
+      webSocketService.connect();
       webSocketService.stream.listen((message) {
         setState(() {
           getDatabyDay();  
         });
-      });*/
+      });
     }
     
 }
