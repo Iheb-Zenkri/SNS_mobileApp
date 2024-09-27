@@ -52,6 +52,7 @@ class _ServiceDialog extends State<ServiceDialog> {
   Future<void> _fetchTownName() async {
     try {
       final name = await widget.service.location.getLocationName();
+      if(!mounted) return;
       setState(() {
         townName = name;
       });
@@ -639,7 +640,10 @@ class _ServiceDialog extends State<ServiceDialog> {
                                         });
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 35,vertical: 12),
+                                    width: 120,
+                                    height: 45,
+                                    alignment: Alignment.center,
+                                    //padding: EdgeInsets.symmetric(horizontal: 35,vertical: 12),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(14.0),
                                       color: alertColor,
@@ -647,7 +651,7 @@ class _ServiceDialog extends State<ServiceDialog> {
                                     child: Center(
                                       child: Text("Supprimer",
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1.0
@@ -671,7 +675,9 @@ class _ServiceDialog extends State<ServiceDialog> {
                                     });
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 35,vertical: 12),
+                                    height: 45,
+                                    width: 120,
+                                    alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(14.0),
                                       color: informationColor,
@@ -679,7 +685,7 @@ class _ServiceDialog extends State<ServiceDialog> {
                                     child: Center(
                                       child: Text("Modifier",
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1.0

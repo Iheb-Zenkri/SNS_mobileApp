@@ -161,7 +161,16 @@ class _WorkerTile extends State<WorkerTile>{
                     Spacer(),
                     GestureDetector(
                     onTap: (){
-                      sofDeleteWorker();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertWidget(errorMessage: "Êtes-vous sûr de vouloir supprimer ce membre d'Equipe ?",isFooter: true,
+                          onChange: (isOk) async {
+                            if(isOk){
+                              sofDeleteWorker();
+                              }
+                          });
+                        });
                     },
                     child: Container(
                       padding: EdgeInsets.all(4.0),

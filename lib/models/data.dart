@@ -299,7 +299,6 @@ Future<http.Response> softDeleteWorker(int workerId) async {
 
 ///post equipement image mthode
    Future<http.StreamedResponse> uploadEquipementImage(int id, File? selectedImage) async {
-    print(id);
     final url = Uri.parse('$_baseUrl/equipement/$id/image');
     try{
       var request = http.MultipartRequest('POST', url);
@@ -320,6 +319,21 @@ Future<http.Response> softDeleteWorker(int workerId) async {
       throw Exception('Failed to connect to the server: $e');
     }
   }
+
+/// update Equipement methode
+  Future<http.Response> updateEquipement(dynamic equipement) async {
+  final url = Uri.parse('$_baseUrl/equipement/${equipement['id']}');
+  try {
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(equipement),
+    );
+    return response;
+  } catch (e) {
+    throw Exception('Failed to connect to the server: $e');
+  }
+}
 
 //// delete service methode
 Future<http.Response> deleteEquipement(int equipementId) async {

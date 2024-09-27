@@ -7,6 +7,7 @@ import 'package:sns_app/models/colors.dart';
 import 'package:sns_app/components/Timer_component.dart';
 import 'package:sns_app/components/service_dialog.dart';
 import 'package:sns_app/models/data.dart';
+import 'package:sns_app/pages/affectation_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -166,11 +167,11 @@ class _ServiceCardState extends  State<ServiceCard> {
           ],
 
           Expanded(
-            child: Padding(
-             padding: const EdgeInsets.fromLTRB(15, 15, 5, 5),
-              child: Stack(
-                children: [
-                  Column(
+            child: Stack(
+              children: [
+                Padding(
+                   padding: const EdgeInsets.fromLTRB(15, 15, 5, 5),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -256,32 +257,47 @@ class _ServiceCardState extends  State<ServiceCard> {
                         ),
                     ],
                   ),
-                    Positioned(
-                          bottom: 4, 
-                          right: 10,
-                          child: GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return ServiceDialog(service: service);
-                                },
-                              );
-                            },
-                            child: Container(
-                              width: 22,
-                              height: 22,
-                              padding: EdgeInsets.all(3.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: informationColor300,
-                              ),
-                              child: Icon(Iconsax.arrow_right_3, size: 15, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                ],
-              ),
+                ),
+                Positioned(
+                  top: 10, 
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ServiceDialog(service: service);
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(3.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: neutralColor100.withOpacity(0.3),width: 1 ),
+                      ),
+                      child: Icon(Icons.more_horiz_rounded, size: 16, color: neutralColor200),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 6,
+                  right: 10,
+                  child:GestureDetector(
+                    onTap: (){
+                       Navigator.push(context, MaterialPageRoute(builder: (context)=> AffectationService()));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(3.0),
+                      decoration: BoxDecoration(
+                        color: primaryColor200,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Icon(Iconsax.add, size: 15, color: Colors.white),
+                    ),
+                  ) )
+              ],
             ),
           ),
          
