@@ -557,14 +557,13 @@ class _AddServicePage extends State<AddServicePage>{
   String _dateController = DateFormat('yyyy-MM-dd').format(DateTime.now());
   String _timeController = "${TimeOfDay.now().hour.toString().padLeft(2, '0')} : ${TimeOfDay.now().minute.toString().padLeft(2, '0')} : 00";
   final TextEditingController _nbWorkersController = TextEditingController(text: '1');
-  final TextEditingController _nbDaysController = TextEditingController(text: '1') ;
+
   final TextEditingController _estimatedPriceController = TextEditingController(text: '0.00');
   bool? _equipment = false;
   List<double> coordinates = [] ;
   
 @override
   void dispose(){
-    _nbDaysController.dispose();
     _nbWorkersController.dispose();
     _estimatedPriceController.dispose();
     super.dispose();
@@ -680,43 +679,7 @@ class _AddServicePage extends State<AddServicePage>{
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 90,
-                  height: 50,
-                  child: TextField(
-                    controller: _nbDaysController,
-                    keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: "Nb de Jours",
-                          labelStyle: TextStyle(
-                             fontSize: 12,
-                            letterSpacing: 1.5,
-                            color: neutralColor200,
-                            fontWeight: FontWeight.bold
-                          ),
-                          filled: true,
-                          fillColor: colorFromHSV(220, 0.06, 1),
-                          suffixIcon: Icon(Iconsax.calendar_add,size: 18,color: primaryColor,),
-                          focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                gapPadding: 2.0,
-                              ),
-                          enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(color: informationColor100,width: 1,),
-                                gapPadding: 0,
-                              ),
-                        ),
-                        style:  TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 1.5,
-                          color: primaryColor700,
-                          fontWeight: FontWeight.bold
-                        ),
-                  ),
-                ),
-                SizedBox(
-                  width: 90,
+                  width: 150,
                   height: 50,
                   child: TextField(
                     controller: _nbWorkersController,
@@ -752,7 +715,7 @@ class _AddServicePage extends State<AddServicePage>{
                   ),
                 ),
                  SizedBox(
-                  width: 110,
+                  width: 150,
                   height: 50,
                   child: TextField(
                     controller: _estimatedPriceController,
@@ -998,7 +961,7 @@ class _AddServicePage extends State<AddServicePage>{
       time: _timeController.replaceAll(' ', ''),
       location: Location(coordinates : coordinates),
       nbWorkers: int.tryParse(_nbWorkersController.text) ?? 0,
-      nbDays: int.tryParse(_nbDaysController.text) ?? 0,
+      nbDays: 1,
       equipment: _equipment ?? false,
       estimatedPrice: double.tryParse(_estimatedPriceController.text) ?? 0.0,
       finished: false,

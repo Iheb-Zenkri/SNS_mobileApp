@@ -11,17 +11,19 @@ class Worker {
         required this.isAvailable,
         required this.isDeleted
   });
+  
 
 
   factory Worker.fromJson(Map<String, dynamic> json) {
     return Worker(
       id: json['id'],
       name: json['name'],
-      phoneNumber: json['phoneNumber'].toString(),
-      isAvailable: json['availability'],
-      isDeleted: json['deleted'],
+      phoneNumber: json['phoneNumber']??"",
+      isAvailable: json['availability']??true,
+      isDeleted: json['deleted']??false,
     );
   }
+
 
    Map<String, dynamic> toJson() {
     return {

@@ -315,7 +315,6 @@ Future<http.Response> softDeleteWorker(int workerId) async {
       final response = await request.send();
        return response ;
     }catch(e){
-      print('Exception : $e ');
       throw Exception('Failed to connect to the server: $e');
     }
   }
@@ -335,7 +334,7 @@ Future<http.Response> softDeleteWorker(int workerId) async {
   }
 }
 
-//// delete service methode
+//// delete equioement methode
 Future<http.Response> deleteEquipement(int equipementId) async {
   final url = Uri.parse('$_baseUrl/equipement/$equipementId');
   try {
@@ -349,5 +348,44 @@ Future<http.Response> deleteEquipement(int equipementId) async {
   }
 }
 
+//////////////////////////////////////////////////
+/////////// Workers Data management //////////////
+//////////////////////////////////////////////////
 
+//// get workers of servcie
+
+Future <List<Worker>> getServiceWorker(int id) async {
+  final response = await http.get(Uri.parse('$_baseUrl/service/$id/workers'));
+
+  if (response.statusCode == 200) {
+    final workerJsonMap = jsonDecode(response.body);
+
+    final result = workerJsonMap.map<Worker>((json) => Worker.fromJson(json)).toList();
+    
+    return result;
+  } else {
+    return [];
+  }
+}
+
+
+
+//// affect a worker to a service
+  Future<http.Response> addWorkerToService(int serviceId,int workerId,String startDate) async{
+    final url = Uri.parse('$_baseUrl/addWorker/$serviceId');
+    try {
+      final workerService = {
+        "workerId": workerId,
+        "startDate": startDate
+      };
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(workerService),
+      );
+      return response ;
+    } catch (e) {
+        throw Exception('Failed to connect to the server: $e');
+    }
+  }
 }

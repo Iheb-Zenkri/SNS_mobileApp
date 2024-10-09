@@ -286,7 +286,7 @@ class _ServiceCardState extends  State<ServiceCard> {
                   right: 10,
                   child:GestureDetector(
                     onTap: (){
-                       Navigator.push(context, MaterialPageRoute(builder: (context)=> AffectationService()));
+                       Navigator.push(context, MaterialPageRoute(builder: (context)=> AffectationService(service: service,)));
                     },
                     child: Container(
                       padding: EdgeInsets.all(3.0),

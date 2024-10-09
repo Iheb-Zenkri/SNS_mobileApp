@@ -25,7 +25,6 @@ class _ServiceDialog extends State<ServiceDialog> {
   String _timeController = "";
   String townName = "Chargement..." ;
   final TextEditingController _nbWorkersController = TextEditingController(text: '0');
-  final TextEditingController _nbDaysController = TextEditingController(text: '0') ;
   final TextEditingController _estimatedPriceController = TextEditingController(text: '0.00');
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -36,7 +35,6 @@ class _ServiceDialog extends State<ServiceDialog> {
 
 @override
   void dispose(){
-    _nbDaysController.dispose();
     _nbWorkersController.dispose();
     _estimatedPriceController.dispose();
     _phoneController.dispose();
@@ -303,13 +301,15 @@ class _ServiceDialog extends State<ServiceDialog> {
                                   SizedBox(height: 4.0,),
                                   GestureDetector(
                                       onTap: () async {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=> LocationDetection(location: coordinates,))).then((value){
-                                            if(value != null ){
-                                              coordinates = [];
-                                              coordinates.add(value.latitude);
-                                              coordinates.add(value.longitude);
-                                            }
-                                        });
+                                        if(_ISUPDATE){
+                                          Navigator.push(context, MaterialPageRoute(builder: (context)=> LocationDetection(location: coordinates,))).then((value){
+                                              if(value != null ){
+                                                coordinates = [];
+                                                coordinates.add(value.latitude);
+                                                coordinates.add(value.longitude);
+                                              }
+                                          });
+                                        }
                                       },
                                     child: Container(
                                       width: 150,
@@ -339,44 +339,7 @@ class _ServiceDialog extends State<ServiceDialog> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 90,
-                              height: 50,
-                              child: TextField(
-                                controller: _ISUPDATE ? _nbDaysController : TextEditingController(text: '${service.nbDays}' ),
-                                keyboardType: TextInputType.number,
-                                readOnly: !_ISUPDATE,
-                                    decoration: InputDecoration(
-                                      labelText: "Nb de Jours",
-                                      labelStyle: TextStyle(
-                                        fontSize: 12,
-                                        letterSpacing: 1.5,
-                                        color: neutralColor200,
-                                        fontWeight: FontWeight.bold
-                                      ),
-                                      filled: true,
-                                      fillColor: colorFromHSV(220, 0.06, 1),
-                                      suffixIcon: Icon(Iconsax.calendar_add,size: 18,color: primaryColor,),
-                                      focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10.0),
-                                            borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                            gapPadding: 2.0,
-                                          ),
-                                      enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10.0),
-                                            borderSide: BorderSide(color: informationColor100,width: 1,),
-                                            gapPadding: 0,
-                                          ),
-                                    ),
-                                    style:  TextStyle(
-                                      fontSize: 14,
-                                      letterSpacing: 1.5,
-                                      color: primaryColor700,
-                                      fontWeight: FontWeight.bold
-                                    ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 90,
+                              width: 150,
                               height: 50,
                               child: TextField(
                                 controller: _ISUPDATE ? _nbWorkersController : TextEditingController(text: '${service.nbWorkers}'),
@@ -413,7 +376,7 @@ class _ServiceDialog extends State<ServiceDialog> {
                               ),
                             ),
                             SizedBox(
-                              width: 110,
+                              width: 150,
                               height: 50,
                               child: TextField(
                                 controller: _ISUPDATE ? _estimatedPriceController : TextEditingController(text: '${service.estimatedPrice}'),
@@ -663,7 +626,6 @@ class _ServiceDialog extends State<ServiceDialog> {
                                   onTap: (){
                                     setState(() {
                                       _typeController = service.type;
-                                      _nbDaysController.text = '${service.nbDays}' ;
                                       _nbWorkersController.text = '${service.nbWorkers}' ;
                                       _estimatedPriceController.text = '${service.estimatedPrice}' ;
                                       _equipment = service.equipment ;
@@ -775,7 +737,6 @@ class _ServiceDialog extends State<ServiceDialog> {
   void updateService(Service service) {
         setState(() {
           service.type = _typeController ?? service.type ;
-          service.nbDays = int.tryParse(_nbDaysController.text) ?? service.nbDays;
           service.nbWorkers = int.tryParse(_nbWorkersController.text) ?? service.nbWorkers;
           service.estimatedPrice = double.tryParse(_estimatedPriceController.text) ?? service.estimatedPrice;
           service.date = _dateController ;
