@@ -27,7 +27,7 @@ class _AffectationService extends State<AffectationService>{
   @override
    void initState() {
     super.initState();
-    futureWorkers = ApiService().fetchAllWorkers();
+    futureWorkers = ApiService().fetchWorkersByDate(widget.service.date);
     futureAffectedWorker = ApiService().getServiceWorker(widget.service.id);
   }
   
@@ -221,8 +221,8 @@ class _AffectationService extends State<AffectationService>{
                   children: [
                     Container(
                       width: MediaQuery.sizeOf(context).width,
-                      height: 100,
-                      padding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                      height: 100+(workersNames.length~/4)*30,
+                      padding: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
                       color: informationColor100,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -277,7 +277,7 @@ class _AffectationService extends State<AffectationService>{
                                   GestureDetector(
                                     onTap: (){
                                       setState(() {
-                                        if(workers.length>service.nbWorkers){
+                                        if(workers.length+workersNames.length>service.nbWorkers){
                                           service.nbWorkers++ ;
                                         }
                                         else{
@@ -349,13 +349,17 @@ class _AffectationService extends State<AffectationService>{
                             ),
                           ),
                           SizedBox(
-                            height: workersNames.isNotEmpty ? 30 : 0,
-                            child: workersNames.isNotEmpty ?  ListView.builder(
+                            height: workersNames.isNotEmpty ? 30+(workersNames.length~/4)*35 : 0,
+                            child: workersNames.isNotEmpty ?  GridView.builder(
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3, 
+                                  mainAxisSpacing: 5.0, 
+                                  childAspectRatio: 4 / 1,
+                                ),
                                 itemCount:workersNames.length,
-                                scrollDirection: Axis.horizontal,
                                 itemBuilder:(context, index) {
                                   return Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 5),
+                                    padding: EdgeInsets.only(right: 5.0),
                                     child: Container(
                                       padding: EdgeInsets.symmetric(horizontal: 12,vertical: 6),
                                       decoration: BoxDecoration(
@@ -363,10 +367,16 @@ class _AffectationService extends State<AffectationService>{
                                         borderRadius: BorderRadius.circular(50.0),
                                       ),
                                       child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
-                                          Text(workersNames[index].name,style: TextStyle(color: neutralColor300,fontSize: 10,fontWeight: FontWeight.bold),),
-                                          SizedBox(width: 7,),
+                                          SizedBox(
+                                            width: 65,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(workersNames[index].name,style: TextStyle(color: neutralColor300,fontSize: 10,fontWeight: FontWeight.bold,),)),
+                                          ),
+                                          Spacer(),
                                           GestureDetector(
                                             onTap: (){
                                               setState(() {

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:sns_app/models/Client.dart';
 import 'package:sns_app/models/Service.dart';
@@ -67,7 +66,6 @@ Future<List<Service>> fetchServiceByDate(String date) async {
     return [];
   }
 }
-
 
 //// get numbre of service in a month 
 Future<List<int>> fetchServiceCountByMonth(String date) async {
@@ -210,6 +208,22 @@ Future<http.Response> deleteService(int serviceId) async {
     }
   }
 
+/// get all availble workers for a custom date
+  Future<List<Worker>> fetchWorkersByDate(String date)async {
+    final url = Uri.parse('$_baseUrl/availbleWorkers/$date');
+    try{
+      final response = await http.get(url);
+      if(response.statusCode == 200 || response.statusCode == 201){
+        final body = jsonDecode(response.body);
+        return (body as List).map((json)=> Worker.fromJson(json)).toList() ;
+      }else{
+        return [];
+      }
+    }catch(e){
+      return [];
+    }
+  }
+
 ///post worker methode
   Future<http.Response> createWorker(Worker worker) async {
     final url =  Uri.parse('$_baseUrl/addWorker');
@@ -254,85 +268,6 @@ Future<http.Response> softDeleteWorker(int workerId) async {
   }
 }
 
-
-//////////////////////////////////////////////////
-////////// Equipement Data management ////////////
-//////////////////////////////////////////////////
-
-/// get all equipements
-  Future<List<dynamic>> getAllEquipments() async {
-    final response = await http.get(Uri.parse('$_baseUrl/equipements'));
-
-    if (response.statusCode == 200) {
-      // Parse the JSON response
-      return jsonDecode(response.body);
-    } else {
-      return [] ;
-    }
-  }
-
-/// get equipement image by id
-  Future<String> getEquipmentImage(int id) async {
-  final response = await http.get(Uri.parse('$_baseUrl/equipment/$id/image'));
-
-  if (response.statusCode == 200) {
-    return '$_baseUrl/equipment/$id/image';  
-  } else {
-    return '';
-  }
-}
-
-///post equipement methode
-  Future<http.Response> createEquipement(dynamic equipement) async {
-    final url =  Uri.parse('$_baseUrl/equipement');
-    try{
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(equipement),
-      );
-      return response ;
-    }catch(e){
-      throw Exception('Failed to connect to the server: $e');
-    }
-  }
-
-///post equipement image mthode
-   Future<http.StreamedResponse> uploadEquipementImage(int id, File? selectedImage) async {
-    final url = Uri.parse('$_baseUrl/equipement/$id/image');
-    try{
-      var request = http.MultipartRequest('POST', url);
-      request.fields['title'] = "Static title" ;
-      if(selectedImage != null){
-        request.files.add(http.MultipartFile(
-          'image',
-          selectedImage.readAsBytes().asStream(),
-          await selectedImage.length(),
-          filename: selectedImage.path.split('/').last,
-        ));
-      }
-
-      final response = await request.send();
-       return response ;
-    }catch(e){
-      throw Exception('Failed to connect to the server: $e');
-    }
-  }
-
-/// update Equipement methode
-  Future<http.Response> updateEquipement(dynamic equipement) async {
-  final url = Uri.parse('$_baseUrl/equipement/${equipement['id']}');
-  try {
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(equipement),
-    );
-    return response;
-  } catch (e) {
-    throw Exception('Failed to connect to the server: $e');
-  }
-}
 
 //// delete equioement methode
 Future<http.Response> deleteEquipement(int equipementId) async {
