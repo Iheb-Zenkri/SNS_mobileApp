@@ -42,8 +42,14 @@ class _CronoTimerState extends State<CronoTimer> with SingleTickerProviderStateM
     TimeOfDay now = TimeOfDay.now();
     
      if (isAfter(serviceTime, now)) {
-            hours = now.hour - serviceTime.hour;
-            minutes = now.minute - serviceTime.minute;
+        if(now.minute<serviceTime.minute){
+            hours = now.hour - serviceTime.hour - 1;
+            minutes = now.minute - serviceTime.minute + 60;
+        }
+        else{
+          hours = now.hour - serviceTime.hour;
+          minutes = now.minute - serviceTime.minute;
+        }
             seconds = 0 ;
             start() ;
           } else {

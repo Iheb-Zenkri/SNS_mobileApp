@@ -244,7 +244,7 @@ class _ServiceCardState extends  State<ServiceCard> {
                                   }
                                 },
                               child: Text(
-                               service.client.phoneNumber.length == 8 ?'  ${service.client.phoneNumber.substring(0,2)} ${service.client.phoneNumber.substring(2,5)} ${service.client.phoneNumber.substring(5)}' : service.client.phoneNumber,
+                               service.client.phoneNumber.length == 8 ?'  ${service.client.phoneNumber.substring(0,2)} ${service.client.phoneNumber.substring(2,5)} ${service.client.phoneNumber.substring(5)}' : ' ${service.client.phoneNumber}',
                               style: TextStyle(
                                 fontSize: 14,
                                 color:  successColor600,

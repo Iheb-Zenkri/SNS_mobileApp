@@ -6,7 +6,6 @@ import 'package:sns_app/components/timetile_widget.dart';
 import 'package:sns_app/models/Service.dart';
 import 'package:sns_app/models/colors.dart';
 import 'package:sns_app/models/data.dart';
-import 'package:sns_app/models/websocket_config.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -33,28 +32,13 @@ class _CalendarPageState extends State<CalendarPage> {
 
   late Future<List<Service>> futureService ;
   
-//// handling real time data 
-  late WebSocketService webSocketService;
-  void initializeWebSocket() {
-      webSocketService = WebSocketService();
-      if(mounted){
-        webSocketService.connect();
-        webSocketService.stream.listen((message) {
-          setState(() {
-            getData();
-            getNbService();
-          });
-        });
-      }
-  }
-////////////////////////////////
+
 
    @override
   void initState(){
     super.initState();
     getData();
     getNbService();  
-    initializeWebSocket(); 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       datePickerController.animateToDate(selectedDate);
     });

@@ -189,6 +189,7 @@ Future<int> getNbServiceForClient(int clientId) async{
       return 0 ;
     }
 }
+
 /// post client methode
   Future<http.Response> createClient(Client client) async {
       final url =  Uri.parse('$_baseUrl/addClient');
@@ -220,6 +221,33 @@ Future<int> getNbServiceForClient(int clientId) async{
   }
 }
 
+/// soft delete client methode
+  Future<http.Response> softDeleteClient(int clientId) async {
+    final url = Uri.parse('$_baseUrl/deleteClient/$clientId');
+    try {
+      final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+      return response;
+    } catch (e) {
+      throw Exception('Failed to soft delete service: $e');
+    }
+  }
+
+/// permanently delete client methode
+  Future<http.Response> permanentlyDeleteClient(int clientId) async {
+    final url = Uri.parse('$_baseUrl/permanentlyDeleteClient/$clientId');
+    try {
+      final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+      return response;
+    } catch (e) {
+      throw Exception('Failed to permantly delete service: $e');
+    }
+  }
 
 //////////////////////////////////////////////////
 //////////// Worker Data management //////////////

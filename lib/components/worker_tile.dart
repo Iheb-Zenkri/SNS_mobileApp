@@ -550,7 +550,7 @@ class _WorkerDialog extends State<WorkerDialog>{
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(14.0),
-                            color: alertColor,
+                            color: informationColor,
                           ),
                           child: Center(
                             child: Text("Confirmer",

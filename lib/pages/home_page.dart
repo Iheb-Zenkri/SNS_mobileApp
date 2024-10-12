@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sns_app/models/colors.dart';
 import 'package:sns_app/models/data.dart';
-import 'package:sns_app/models/websocket_config.dart';
 import '../models/Service.dart';
 import '../components/service_card.dart';
 
@@ -25,27 +24,11 @@ class _AccueilPageState extends State<AccueilPage> {
 // new code for api
   late Future<List<Service>> futureService ;
 
-//// handling real time data 
-  late WebSocketService webSocketService;
-  void initializeWebSocket() {
-    webSocketService = WebSocketService();
-    if(mounted){
-      webSocketService.connect();
-      webSocketService.stream.listen((message) {
-        setState(() {
-          getDatabyDay();  
-        });
-      });
-    }
-    
-}
-////////////////////////////////
  
   @override
   void initState(){
     super.initState();
     getDatabyDay();
-    //initializeWebSocket();
   }
   
   @override
