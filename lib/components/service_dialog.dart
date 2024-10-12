@@ -750,7 +750,8 @@ class _ServiceDialog extends State<ServiceDialog> {
         final Client client = Client(
                                 id: service.client.id, 
                                 name: _nameController.text, 
-                                phoneNumber: _phoneController.text);
+                                phoneNumber: _phoneController.text,
+                                isDeleted: false);
         ApiService().updateClient(client)
           .then((response) {
               setState(() {

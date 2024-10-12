@@ -87,7 +87,7 @@ class Service {
       equipment: json['equipment'] as bool? ?? false,
       estimatedPrice: json['estimatedPrice'] as double? ?? 0.0,
       finished: json['finished'] as bool? ?? false,
-      client: json['client'] !=null ? Client.fromJson(json['client']) : Client(id: 0, name: '', phoneNumber: '') ,
+      client: json['client'] !=null ? Client.fromJson(json['client']) : Client(id: 0, name: '', phoneNumber: '',isDeleted: false) ,
     );
   }
 

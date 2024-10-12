@@ -29,7 +29,9 @@ class Worker {
     return {
       'id' : id,
       'name': name,
-      'phoneNumber' : phoneNumber
+      'phoneNumber' : phoneNumber,
+      'availability':isAvailable,
+      'deleted':isDeleted,
     };
   }
 }

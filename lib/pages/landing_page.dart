@@ -22,7 +22,7 @@ class _HomePageState extends State<Homepage>{
 
     var counter = 10;
 
-    var selectedIndex = 0;
+    var selectedIndex = 3;
         
 
     static const List<StatefulWidget> widgetOptions = <StatefulWidget>[

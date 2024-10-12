@@ -187,7 +187,8 @@ class _AddClientPage extends State<AddClientPage> {
       // Construct the payload
       final client = Client(id: 0,
             name: _nameController.text,
-            phoneNumber: _phoneController.text
+            phoneNumber: _phoneController.text,
+            isDeleted: false
           );
 
       ApiService().createClient(client).then((response) =>{
@@ -965,7 +966,7 @@ class _AddServicePage extends State<AddServicePage>{
       equipment: _equipment ?? false,
       estimatedPrice: double.tryParse(_estimatedPriceController.text) ?? 0.0,
       finished: false,
-      client: Client(id: widget.id, phoneNumber: "", name: ""),
+      client: Client(id: widget.id, phoneNumber: "", name: "",isDeleted: false),
     );
 
     try {

@@ -155,7 +155,40 @@ Future<http.Response> deleteService(int serviceId) async {
       return [];
     }
   }
-///
+
+/// get all deleted clients methode
+Future<List<Client>> fetchAllDeletedClients() async {
+    final url = Uri.parse('$_baseUrl/AllDeletedClients');
+    try{
+      final response = await http.get(url);
+
+      if(response.statusCode == 200){
+        final body = jsonDecode(response.body);
+        return (body as List).map((json) => Client.fromJson(json)).toList() ;
+      } else {
+        return [] ;
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+/// get service count for clients methode
+Future<int> getNbServiceForClient(int clientId) async{
+    final url = Uri.parse('$_baseUrl/ClientsServiceCount/$clientId');
+    try {
+      final response = await http.get(url);
+
+      if(response.statusCode == 200){
+        return jsonDecode(response.body);
+      }
+      else{
+        return 0;
+      }
+    } catch (e) {
+      return 0 ;
+    }
+}
 /// post client methode
   Future<http.Response> createClient(Client client) async {
       final url =  Uri.parse('$_baseUrl/addClient');
@@ -254,7 +287,7 @@ Future<http.Response> deleteService(int serviceId) async {
   }
 }
 
-//// delete service methode
+//// Soft delete worker methode
 Future<http.Response> softDeleteWorker(int workerId) async {
   final url = Uri.parse('$_baseUrl/softDeleteWorker/$workerId');
   try {
@@ -268,10 +301,9 @@ Future<http.Response> softDeleteWorker(int workerId) async {
   }
 }
 
-
-//// delete equioement methode
-Future<http.Response> deleteEquipement(int equipementId) async {
-  final url = Uri.parse('$_baseUrl/equipement/$equipementId');
+//// Permantly delete worker methode
+Future<http.Response> deleteWorker(int workerId) async {
+  final url = Uri.parse('$_baseUrl/permanentlyDeleteWorker/$workerId');
   try {
     final response = await http.delete(
       url,
@@ -284,11 +316,10 @@ Future<http.Response> deleteEquipement(int equipementId) async {
 }
 
 //////////////////////////////////////////////////
-/////////// Workers Data management //////////////
+//////// Service'worker Data management //////////
 //////////////////////////////////////////////////
 
 //// get workers of servcie
-
 Future <List<Worker>> getServiceWorker(int id) async {
   final response = await http.get(Uri.parse('$_baseUrl/service/$id/workers'));
 
@@ -302,8 +333,6 @@ Future <List<Worker>> getServiceWorker(int id) async {
     return [];
   }
 }
-
-
 
 //// affect a worker to a service
   Future<http.Response> addWorkerToService(int serviceId,int workerId,String startDate) async{

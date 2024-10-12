@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:sns_app/components/client_tile.dart';
 import 'package:sns_app/components/dialog_widget.dart';
 import 'package:sns_app/components/worker_tile.dart';
 import 'package:sns_app/models/Client.dart';
@@ -33,6 +33,7 @@ class _TeamPageState extends State<TeamPage> {
     super.initState();
     futureWorkers = ApiService().fetchAllWorkers();
   }
+  bool istest = false ;
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +172,8 @@ class _TeamPageState extends State<TeamPage> {
                         Text("Disponible",style: TextStyle(
                           color: successColor600,
                           fontSize: 12,
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.normal,
+                          letterSpacing: 1.5
                         ),)
                       ],
                     )
@@ -189,10 +191,11 @@ class _TeamPageState extends State<TeamPage> {
                           ),
                         ),
                         SizedBox(width: 5.0,),
-                        Text("Non Disponible",style: TextStyle(
+                        Text("Indisponible",style: TextStyle(
                           color: warningColor600,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold
+                          fontSize: 11,
+                          fontWeight: FontWeight.normal,
+                          letterSpacing: 1.2
                         ),)
                       ],
                     )
@@ -213,7 +216,8 @@ class _TeamPageState extends State<TeamPage> {
                         Text("Eliminé",style: TextStyle(
                           color: alertColor600,
                           fontSize: 12,
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.normal,
+                          letterSpacing: 1.5
                         ),)
                       ],
                     )
@@ -289,7 +293,7 @@ class _TeamPageState extends State<TeamPage> {
                         itemBuilder:(context, index) {
                           return Padding(
                             padding: index == 0 ? EdgeInsets.only(top: 20): index == clients.length-1 ? EdgeInsets.only(bottom: 50,top: 10) : EdgeInsets.only(top: 10.0),
-                            child: Text(clients[index].name),
+                            child: ClientTile(client: clients[index]),
                           );
                         },);
                   })
@@ -298,6 +302,18 @@ class _TeamPageState extends State<TeamPage> {
             ),
           
           ],
+        
+          if(selectedIndex == 2)...[
+            Center(
+              child: Switch(
+                value: istest, 
+                onChanged: (onChanged){
+                  setState(() {
+                    istest = onChanged ;
+                  });
+                }),
+            )
+          ]
         ],
       ),
     );

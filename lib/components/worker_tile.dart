@@ -1,3 +1,4 @@
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sns_app/components/dialog_widget.dart';
@@ -18,16 +19,6 @@ class WorkerTile extends StatefulWidget{
 class _WorkerTile extends State<WorkerTile>{
 
   bool isUpdate = false ;
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final _formKey = GlobalKey<FormState>() ;
-
-  @override
-  void initState() {
-    super.initState();
-    _phoneController.text = widget.worker.phoneNumber ;
-    _nameController.text = widget.worker.name ;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +27,7 @@ class _WorkerTile extends State<WorkerTile>{
       duration: Duration(milliseconds: 300), // Duration of the animation
       curve: Curves.fastEaseInToSlowEaseOut, 
       width: MediaQuery.sizeOf(context).width-50,
-      height: isUpdate ? 90 : 60,
+      height: isUpdate ? 100 : 60,
       margin: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         boxShadow: [ BoxShadow(
@@ -124,17 +115,18 @@ class _WorkerTile extends State<WorkerTile>{
               left: 20,
               child: Container(
                 width: MediaQuery.sizeOf(context).width-60,
-                alignment: Alignment.bottomCenter,
-                height: 30,
+                alignment: Alignment.center,
+                height: 40,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(6.0),
                     bottomRight: Radius.circular(6.0),
                   ),
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white70,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     GestureDetector(
                       onTap: (){
@@ -167,13 +159,14 @@ class _WorkerTile extends State<WorkerTile>{
                           return AlertWidget(errorMessage: "Êtes-vous sûr de vouloir supprimer ce membre d'Equipe ?",isFooter: true,
                           onChange: (isOk) async {
                             if(isOk){
-                              sofDeleteWorker();
+                              worker.isDeleted ? deleteWorker() : sofDeleteWorker() ;
                               }
                           });
                         });
                     },
                     child: Container(
                       padding: EdgeInsets.all(4.0),
+                      margin: EdgeInsets.only(right: 20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6.0),
                         color: alertColor,
@@ -187,13 +180,15 @@ class _WorkerTile extends State<WorkerTile>{
                       child: Icon(Iconsax.trash,size: 13,color: Colors.white,),
                     ),
                   ),
-                    GestureDetector(
+                    
+                    if(!worker.isDeleted)...[
+                      GestureDetector(
                         onTap: (){
                           _showCreateServiceDialog(context);
                         },
                         child: Container(
                           padding: EdgeInsets.all(4.0),
-                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          margin: EdgeInsets.only(right: 20),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6.0),
                             color: informationColor,
@@ -207,6 +202,38 @@ class _WorkerTile extends State<WorkerTile>{
                           child: Icon(Icons.mode_edit_outline_rounded,size: 13,color: Colors.white,),
                         ),
                       )
+                    ],
+                    if(worker.isDeleted)...[
+                      GestureDetector(
+                        onTap: (){
+                          showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmWidget(confirmMessage: "Êtes-vous sûr de vouloir restorer ce membre d'Equipe ?",
+                          onChange: (isOk) async {
+                            if(isOk){
+                              restoreDeletedWorker();
+                            }
+                          });
+                        });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(4.0),
+                          margin: EdgeInsets.only(right: 20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6.0),
+                            color: successColor,
+                            boxShadow: [ BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              offset: Offset(0, 0),
+                              blurRadius: 10,
+                              spreadRadius: 1,
+                          ),],
+                          ),
+                          child: Icon(Icons.refresh_rounded,size: 13,color: Colors.white,),
+                        ),
+                      )
+                    ]
                   ],
                 ),
               )
@@ -223,195 +250,338 @@ class _WorkerTile extends State<WorkerTile>{
     return warningColor ;
   }
 
-  void _showCreateServiceDialog(BuildContext context) async{
+  void _showCreateServiceDialog(context) async{
    await showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          alignment: Alignment.center,
-          insetAnimationCurve: Curves.bounceInOut,
-          insetAnimationDuration: Duration(milliseconds: 400),
-          child:SizedBox(
-            width: MediaQuery.sizeOf(context).width,
-            height: MediaQuery.sizeOf(context).height*0.5,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                  Container(
-                    padding: EdgeInsets.all(15.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10.0),
-                        topRight: Radius.circular(10.0),
-                      ),
-                    color: informationColor600,
-                    ),
-                    child: Center(
-                      child: Text(
-                          "MODIFIER OUVRIER",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                          ),),
-                    ),
-                  ),
-                  Container(
-                     padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10.0),
-                        bottomRight: Radius.circular(10.0),
-                      ),
-                      color: Colors.white
-                    ),
-                    width: MediaQuery.sizeOf(context).width,
-                    height: MediaQuery.sizeOf(context).height*0.4,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          /// fields for worker
-                          SizedBox(
-                            width: 250,
-                            height: 60,
-                            child: TextFormField(
-                              controller: _nameController,
-                              keyboardType: TextInputType.name,
-                              decoration: InputDecoration(
-                                labelText: "Nom et Prénom",
-                                labelStyle: TextStyle(
-                                  fontSize: 12,
-                                  letterSpacing: 1.5,
-                                  color: neutralColor200,
-                                  fontWeight: FontWeight.bold
-                                ),
-                                filled: true,
-                                fillColor: colorFromHSV(220, 0.06, 1),
-                                suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
-                                focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                      gapPadding: 2.0,
-                                    ),
-                                enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(color: informationColor100,width: 1,),
-                                      gapPadding: 0,
-                                    ),
-                              ),
-                              style:  TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 1.5,
-                                color: primaryColor700,
-                                fontWeight: FontWeight.bold
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Le champ ne peut pas être vide';
-                                }
-                                if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
-                                  return 'Uniquement des caractères alphabétiques';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 250,
-                            height: 60,
-                            child: TextFormField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: "Téléphone",
-                                labelStyle: TextStyle(
-                                  fontSize: 12,
-                                  letterSpacing: 1.5,
-                                  color: neutralColor200,
-                                  fontWeight: FontWeight.bold
-                                ),
-                                filled: true,
-                                fillColor: colorFromHSV(220, 0.06, 1),
-                                suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
-                                focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                      gapPadding: 2.0,
-                                    ),
-                                enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(color: informationColor100,width: 1,),
-                                      gapPadding: 0,
-                                    ),
-                              ),
-                              style:  TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 1.5,
-                                color: primaryColor700,
-                                fontWeight: FontWeight.bold
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Le champ ne peut pas être vide';
-                                }
-                                if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
-                                  return 'Un numéro valide est à 8 chiffres';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          /// buttons
-                          GestureDetector(
-                            onTap: (){
-                              updateWorker();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                              constraints: BoxConstraints(
-                                maxWidth: 200,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14.0),
-                                color: alertColor,
-                              ),
-                              child: Center(
-                                child: Text("Confirmer",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.0
-                                ),),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  )
-                ],
-                
-            ),
-          )
-        );
+      builder: (context) {
+        return WorkerDialog(worker: widget.worker,) ;
       },
     );
   }
+
+  void sofDeleteWorker() async{
+    ApiService().softDeleteWorker(widget.worker.id).then((response) async {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SuccessWidget(validationMessage:'Ouvrier ${widget.worker.name} a été supprimer avec succés !' ,);
+                },
+              );
+      }else {
+        String errorMessage = "Échec de la suppression d'Ouvrier. Veuillez réessayer." ;
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertWidget(errorMessage: errorMessage,);
+          },
+        );
+      }
+    });
+  }
+
+  void deleteWorker() async{
+    ApiService().deleteWorker(widget.worker.id).then((response) async {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SuccessWidget(validationMessage:'Ouvrier ${widget.worker.name} a été supprimer défintifement avec succés !' ,);
+                },
+              );
+      }else {
+        String errorMessage = "Échec de la suppression d'Ouvrier. Veuillez réessayer." ;
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertWidget(errorMessage: errorMessage,);
+          },
+        );
+      }
+    });
+  }
   
+  void restoreDeletedWorker() async {
+    setState(() {
+      widget.worker.isDeleted = false ;
+    });
+
+    ApiService().updateWorker(widget.worker).then((response) async {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SuccessWidget(validationMessage:'Ouvrier ${widget.worker.name} a été restorer avec succés !' ,);
+                },
+              );
+      }else {
+        String errorMessage = "Échec de la restoration d'Ouvrier. Veuillez réessayer." ;
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertWidget(errorMessage: errorMessage,);
+          },
+        );
+      }
+    });
+  }
+
+}
+
+
+
+
+class WorkerDialog extends StatefulWidget{
+  final Worker worker;
+
+  const WorkerDialog({super.key,required this.worker});
+
+  @override
+  State<WorkerDialog> createState() => _WorkerDialog();
+  }
+  
+class _WorkerDialog extends State<WorkerDialog>{
+
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>() ;
+
+  bool isAvailable = false ;
+  
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.text = widget.worker.phoneNumber ;
+    _nameController.text = widget.worker.name ;
+    isAvailable = widget.worker.isAvailable;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      alignment: Alignment.center,
+      insetAnimationCurve: Curves.bounceInOut,
+      insetAnimationDuration: Duration(milliseconds: 400),
+      child:SizedBox(
+        width: MediaQuery.sizeOf(context).width,
+        height: MediaQuery.sizeOf(context).height*0.6,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+              Container(
+                padding: EdgeInsets.all(15.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10.0),
+                    topRight: Radius.circular(10.0),
+                  ),
+                color: informationColor600,
+                ),
+                child: Center(
+                  child: Text(
+                      "MODIFIER OUVRIER",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),),
+                ),
+              ),
+              
+              Container(
+                  padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10.0),
+                    bottomRight: Radius.circular(10.0),
+                  ),
+                  color: Colors.white
+                ),
+                width: MediaQuery.sizeOf(context).width,
+                height: MediaQuery.sizeOf(context).height*0.5,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      /// fields for worker
+                      SizedBox(
+                        width: 250,
+                        height: 60,
+                        child: TextFormField(
+                          controller: _nameController,
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                            labelText: "Nom et Prénom",
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              letterSpacing: 1.5,
+                              color: neutralColor200,
+                              fontWeight: FontWeight.bold
+                            ),
+                            filled: true,
+                            fillColor: colorFromHSV(220, 0.06, 1),
+                            suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
+                            focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                  gapPadding: 2.0,
+                                ),
+                            enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(color: informationColor100,width: 1,),
+                                  gapPadding: 0,
+                                ),
+                          ),
+                          style:  TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 1.5,
+                            color: primaryColor700,
+                            fontWeight: FontWeight.bold
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Le champ ne peut pas être vide';
+                            }
+                            if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                              return 'Uniquement des caractères alphabétiques';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        height: 60,
+                        child: TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: "Téléphone",
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              letterSpacing: 1.5,
+                              color: neutralColor200,
+                              fontWeight: FontWeight.bold
+                            ),
+                            filled: true,
+                            fillColor: colorFromHSV(220, 0.06, 1),
+                            suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
+                            focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                  gapPadding: 2.0,
+                                ),
+                            enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(color: informationColor100,width: 1,),
+                                  gapPadding: 0,
+                                ),
+                          ),
+                          style:  TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 1.5,
+                            color: primaryColor700,
+                            fontWeight: FontWeight.bold
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Le champ ne peut pas être vide';
+                            }
+                            if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
+                              return 'Un numéro valide est à 8 chiffres';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      AnimatedToggleSwitch.size(
+                        current: isAvailable, 
+                        values: const [false,true],
+                        iconOpacity: 1,
+                        indicatorSize: const Size.fromWidth(100),
+                        customIconBuilder: (context, local, global) => Text(
+                          local.value ? 'Disponible' : 'Indisponible',
+                          style: TextStyle(
+                            color: Color.lerp(neutralColor, Colors.white, local.animationValue),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.0,
+                            letterSpacing: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        borderWidth: 1.5,
+                        iconAnimationType: AnimationType.onHover,
+                        animationDuration: Duration(milliseconds: 300),
+                        animationCurve: Curves.easeInOut,
+                        style: ToggleStyle(
+                          indicatorColor: isAvailable ? successColor : warningColor,
+                          borderColor: isAvailable ? successColor : warningColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                          indicatorBorderRadius: BorderRadius.only(
+                            topLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
+                            bottomLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
+                            topRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
+                            bottomRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
+
+                          )
+                          
+                        ),
+                        selectedIconScale: 1.0,
+                        onChanged: (value) => setState(() {
+                          isAvailable = value ;
+                        }),
+                        ),
+                      
+                      /// buttons
+                      GestureDetector(
+                        onTap: (){
+                          updateWorker();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                          constraints: BoxConstraints(
+                            maxWidth: 200,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14.0),
+                            color: alertColor,
+                          ),
+                          child: Center(
+                            child: Text("Confirmer",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.0
+                            ),),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              )
+            ],
+            
+        ),
+      )
+    );
+     
+  }
+  
+    
   void updateWorker() async {
     if(_formKey.currentState!.validate()){
       final worker = Worker(id: widget.worker.id, 
         name: _nameController.text, 
         phoneNumber: _phoneController.text,
-        isAvailable: widget.worker.isAvailable, 
+        isAvailable: isAvailable, 
         isDeleted: widget.worker.isDeleted
       );
       ApiService().updateWorker(worker).then((response) async {
@@ -441,24 +611,5 @@ class _WorkerTile extends State<WorkerTile>{
     }
   }
 
-  void sofDeleteWorker() async{
-    ApiService().softDeleteWorker(widget.worker.id).then((response) async {
-      if (response.statusCode == 200 || response.statusCode == 201) {
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return SuccessWidget(validationMessage:'Ouvrier ${_nameController.text} a été supprimer avec succés !' ,);
-                },
-              );
-      }else {
-        String errorMessage = "Échec de la suppression d'Ouvrier. Veuillez réessayer." ;
-        await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertWidget(errorMessage: errorMessage,);
-          },
-        );
-      }
-    });
-  }
 }
+
