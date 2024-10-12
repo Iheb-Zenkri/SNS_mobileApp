@@ -55,7 +55,6 @@ class Service {
   String time;
   Location location;
   int nbWorkers;
-  int nbDays;
   bool equipment;
   double estimatedPrice;
   bool finished;
@@ -68,7 +67,6 @@ class Service {
     required this.time,
     required this.location,
     required this.nbWorkers,
-    required this.nbDays,
     required this.equipment,
     required this.estimatedPrice,
     required this.finished,
@@ -77,18 +75,20 @@ class Service {
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
-      id: json['id'] as int? ?? 0,
-      date: json['date'] as String? ?? '',
-      type: json['type']as String? ?? '',
-      time: json['time']as String? ?? '',
+      id: json['id'],
+      date: json['date'],
+      type: json['type'],
+      time: json['time'],
       location: Location.fromJson(json['location']),
-      nbWorkers: json['nbWorkers']as int? ?? 1,
-      nbDays: json['nbDays']as int? ?? 1,
-      equipment: json['equipment'] as bool? ?? false,
-      estimatedPrice: json['estimatedPrice'] as double? ?? 0.0,
-      finished: json['finished'] as bool? ?? false,
-      client: json['client'] !=null ? Client.fromJson(json['client']) : Client(id: 0, name: '', phoneNumber: '',isDeleted: false) ,
+      nbWorkers: json['nbWorkers'],
+      equipment: json['equipment'],
+      estimatedPrice:( json['estimatedPrice'] as num).toDouble(),
+      finished: json['finished'],
+      client: json['client'] != null
+          ? Client.fromJson(json['client'])
+          : Client(id: 0, name: '', phoneNumber: '', isDeleted: false),
     );
+
   }
 
    Map<String, dynamic> toJson() {
@@ -101,7 +101,6 @@ class Service {
         'coordinates': location.coordinates,
       },
       'nbWorkers': nbWorkers,
-      'nbDays': nbDays,
       'equipment': equipment,
       'estimatedPrice': estimatedPrice,
       'finished': finished,

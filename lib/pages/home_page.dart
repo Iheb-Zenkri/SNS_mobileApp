@@ -94,18 +94,16 @@ class _AccueilPageState extends State<AccueilPage> {
           ),
 
             Expanded(
-                child: FutureBuilder<List<Service>>(
+                child: FutureBuilder(
                   future: futureService, 
                   builder: (context, snapshot){
-
-                    ////handling serveur delay or issue
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: Le serveur est en panne !!'));
                     } else if(snapshot.hasData){
 
-                    /// displayin rest of the week                      
+                    // displayin rest of the week                      
                       if (_selectedDayIndex == 3) {
                         return FutureBuilder(
                           future: servicesByDate(), 
@@ -145,14 +143,14 @@ class _AccueilPageState extends State<AccueilPage> {
                                   currentIndex += serviceList.length + 1;
                                 }
                                 return SizedBox.shrink(); 
-                            }) : Text("Aucun service pour la reste de semaine");
+                            }) : Center(child: Text("Aucun service pour le reste de cette semaine"));
                           }
                           });
                         }
 
-
                     //// filtre services by date and display it
                       List<Service> filteredServices = snapshot.data!;
+                      
                       filteredServices.sort((a, b) => a.time.compareTo(b.time));
                       return ListView.builder(
                       itemCount:  filteredServices.isEmpty ? 1 :filteredServices.length,
@@ -203,7 +201,7 @@ class _AccueilPageState extends State<AccueilPage> {
            date = DateFormat('yyyy-MM-dd').format(DateTime.now());
           break;
       }
-      futureService = ApiService().fetchServiceByDate(date);
+        futureService = ApiService().fetchServiceByDate(date);
   }
   
   Future<Map<String, List<Service>>> servicesByDate() async {
@@ -216,7 +214,7 @@ class _AccueilPageState extends State<AccueilPage> {
       DateTime.now().add(Duration(days: 6)),
     ];
 
-    await Future.wait(dates.map((date) async {
+    Future.wait(dates.map((date) async {
       String formattedDate = DateFormat('yyyy-MM-dd').format(date);
       List<Service> response = await ApiService().fetchServiceByDate(formattedDate);
       servicesByDate[formattedDate] = response.isNotEmpty ? response : [];

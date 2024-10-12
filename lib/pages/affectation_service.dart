@@ -43,6 +43,7 @@ class _AffectationService extends State<AffectationService>{
         /// about which worker he needs and which he doesnt
         /// and the menu to affect new workers materiel or images
           Container(
+            margin: EdgeInsets.only(top: 40.0),
             decoration: BoxDecoration(
               color: Colors.white,
             ),
@@ -139,7 +140,7 @@ class _AffectationService extends State<AffectationService>{
                                 SizedBox(height: 12,),
                                 Flexible(
                                   child: Text(
-                                    "Aucune remarque"
+                                    service.client.note??"Aucun Remarque",style: TextStyle(color: neutralColor,fontSize: 12,letterSpacing: 1.5),
                                   ))
                           
                               ],
@@ -222,7 +223,7 @@ class _AffectationService extends State<AffectationService>{
                     Container(
                       width: MediaQuery.sizeOf(context).width,
                       height: 100+(workersNames.length~/4)*30,
-                      padding: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
+                      padding: EdgeInsets.fromLTRB(15, 8, 15, 4),
                       color: informationColor100,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -329,9 +330,9 @@ class _AffectationService extends State<AffectationService>{
                               )
                             ],
                           ),
-                          SizedBox(height: 16,),
+                          SizedBox(height: workersNames.isEmpty ? 15 : 0,),
                           SizedBox(
-                            height: workersNames.isEmpty ? 30 : 0,
+                            height: workersNames.isEmpty ? 15 : 0,
                             child: FutureBuilder(
                               future: futureAffectedWorker,
                               builder: (context, snapshot) {
@@ -348,25 +349,33 @@ class _AffectationService extends State<AffectationService>{
                                 return SizedBox();},
                             ),
                           ),
-                          SizedBox(
-                            height: workersNames.isNotEmpty ? 30+(workersNames.length~/4)*35 : 0,
+                          Expanded(
                             child: workersNames.isNotEmpty ?  GridView.builder(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              padding: EdgeInsets.only(top:15),
+                              scrollDirection: Axis.vertical,
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3, 
-                                  mainAxisSpacing: 5.0, 
+                                  mainAxisSpacing: 10.0, 
                                   childAspectRatio: 4 / 1,
                                 ),
                                 itemCount:workersNames.length,
                                 itemBuilder:(context, index) {
                                   return Padding(
-                                    padding: EdgeInsets.only(right: 5.0),
+                                    padding: EdgeInsets.only(right: 6.0),
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 12,vertical: 6),
+                                      padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                                       decoration: BoxDecoration(
                                         color : Colors.white,
                                         borderRadius: BorderRadius.circular(50.0),
                                       ),
-                                      child: Row(
+                                      child: GestureDetector(
+                                            onTap: (){
+                                              setState(() {
+                                                workers.add(workersNames[index]);
+                                                workersNames.removeAt(index);
+                                              });
+                                            },
+                                            child:  Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
@@ -377,22 +386,16 @@ class _AffectationService extends State<AffectationService>{
                                               child: Text(workersNames[index].name,style: TextStyle(color: neutralColor300,fontSize: 10,fontWeight: FontWeight.bold,),)),
                                           ),
                                           Spacer(),
-                                          GestureDetector(
-                                            onTap: (){
-                                              setState(() {
-                                                workers.add(workersNames[index]);
-                                                workersNames.removeAt(index);
-                                              });
-                                            },
-                                            child: Icon(Icons.close,color: neutralColor100,size: 15,)
-                                          )
+                                         Icon(Icons.close,color: neutralColor100,size: 15,)
                                         ],
                                       ),
+                                    ),
                                     ),
                                   ) ;
                                   },
                                 ): SizedBox(),
-                          )
+                          ),
+                          
                         ],
                       ),
                     ),
@@ -432,25 +435,7 @@ class _AffectationService extends State<AffectationService>{
                                       color: informationColor100,
                                     ),
                                     alignment: Alignment.center,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 120,
-                                          alignment: Alignment.centerLeft,
-                                          child: FittedBox(
-                                            fit: BoxFit.scaleDown,
-                                            child: Text(workers[index].name,style: TextStyle(
-                                              color: neutralColor600,
-                                              fontSize: 14 ,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1.5,
-                                            ),),
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        GestureDetector(
+                                    child: GestureDetector(
                                           onTap: (){
                                             setState(() {
                                               if(service.nbWorkers>workersNames.length){
@@ -467,10 +452,28 @@ class _AffectationService extends State<AffectationService>{
                                               }
                                             });
                                           },
-                                          child: Icon(Iconsax.add_square5,color: informationColor300,size: 20,)
-                                        )
-                                      ],
-                                    ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 115,
+                                              alignment: Alignment.centerLeft,
+                                              child: FittedBox(
+                                                fit: BoxFit.scaleDown,
+                                                child: Text(workers[index].name,style: TextStyle(
+                                                  color: neutralColor600,
+                                                  fontSize: 14 ,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.5,
+                                                ),),
+                                              ),
+                                            ),
+                                            Spacer(),
+                                          Icon(Iconsax.add_square5,color: informationColor300,size: 20,)
+                                          ],
+                                        ),
+                                      ),
                                   );
                                 },) ;
                           })

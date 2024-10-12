@@ -78,6 +78,7 @@ class _TeamPageState extends State<TeamPage> {
               children: [
                 Container(
                   padding: EdgeInsets.fromLTRB(20, 30, 0, 0),
+                  margin: EdgeInsets.only(top:20),
                   width: MediaQuery.sizeOf(context).width,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -238,6 +239,9 @@ class _TeamPageState extends State<TeamPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
                       }
+                      if(!snapshot.hasData){
+                        return Center(child: Text('Aucun Ouvrier trouvé'));
+                      }
                       List<Worker> availableWorkers = snapshot.data!.where((w) => w.isAvailable && !w.isDeleted).toList();
                       List<Worker> unavailableWorkers = snapshot.data!.where((w) => !w.isAvailable && !w.isDeleted).toList();
                       List<Worker> deletedWorkers = snapshot.data!.where((w) => w.isDeleted).toList();
@@ -256,7 +260,7 @@ class _TeamPageState extends State<TeamPage> {
                         displayList.addAll(deletedWorkers);  
                       }
 
-                      return ListView.builder(
+                      return displayList.isNotEmpty ? ListView.builder(
                         itemCount: displayList.length,
                         itemBuilder: (context, index) {
                           if (displayList[index] is String) {
@@ -273,7 +277,7 @@ class _TeamPageState extends State<TeamPage> {
                             );
                           }
                         },
-                      );
+                      ) :  Center(child: Text('Aucun Ouvrier trouvé'));
                   })
                 
               ),
@@ -421,22 +425,25 @@ class _TeamPageState extends State<TeamPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
                       }
+                      if(!snapshot.hasData){
+                        return Center(child: Text('Aucun Clients trouvé'));
+                      }
                       if (snapshot.hasError) {
-                      return Center(child: Text('Serveur en panne')); // Handle any errors
+                      return Center(child: Text('Serveur en panne')); 
                       }
                       List<Client> clients = snapshot.data![0] ;
                       List<Client> deletedClients = snapshot.data![1];
 
                       List<Client> allClients = [...clients, ...deletedClients];
 
-                      return ListView.builder(
+                      return allClients.isNotEmpty ? ListView.builder(
                         itemCount: allClients.isEmpty ? 1 : allClients.length,
                         itemBuilder:(context, index) {
                           return Padding(
                             padding: index == 0 ? EdgeInsets.only(top: 20): index == allClients.length-1 ? EdgeInsets.only(bottom: 50,top: 10) : EdgeInsets.only(top: 10.0),
                             child: ClientTile(client: allClients[index]),
-                          );
-                        },);
+                          ) ;
+                        },): Center(child: Text('Aucun Clients trouvé'));
                   })
               ),
             ),
@@ -544,209 +551,211 @@ class _WorkerDialog extends State<WorkerDialog>{
       child:SizedBox(
         width: MediaQuery.sizeOf(context).width,
         height: MediaQuery.sizeOf(context).height*0.6,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-              Container(
-                padding: EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                Container(
+                  padding: EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+                  color: informationColor600,
                   ),
-                color: informationColor600,
-                ),
-                child: Center(
-                  child: Text(
-                      "AJOUTER OUVRIER",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),),
-                ),
-              ),
-              
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0),
+                  child: Center(
+                    child: Text(
+                        "AJOUTER OUVRIER",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),),
                   ),
-                  color: Colors.white
                 ),
-                width: MediaQuery.sizeOf(context).width,
-                height: MediaQuery.sizeOf(context).height*0.5,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// fields for worker
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _nameController,
-                          keyboardType: TextInputType.name,
-                          decoration: InputDecoration(
-                            labelText: "Nom et Prénom",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
+                
+                Container(
+                    padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                    ),
+                    color: Colors.white
+                  ),
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).height*0.5,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// fields for worker
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                              labelText: "Nom et Prénom",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
                               letterSpacing: 1.5,
-                              color: neutralColor200,
+                              color: primaryColor700,
                               fontWeight: FontWeight.bold
                             ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                                return 'Uniquement des caractères alphabétiques';
+                              }
+                              return null;
+                            },
                           ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
-                              return 'Uniquement des caractères alphabétiques';
-                            }
-                            return null;
-                          },
                         ),
-                      ),
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: "Téléphone",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Téléphone",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
                               letterSpacing: 1.5,
-                              color: neutralColor200,
+                              color: primaryColor700,
                               fontWeight: FontWeight.bold
                             ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
+                                return 'Un numéro valide est à 8 chiffres';
+                              }
+                              return null;
+                            },
                           ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
+                        ),
+                        AnimatedToggleSwitch.size(
+                          current: isAvailable, 
+                          values: const [false,true],
+                          iconOpacity: 1,
+                          indicatorSize: const Size.fromWidth(100),
+                          customIconBuilder: (context, local, global) => Text(
+                            local.value ? 'Disponible' : 'Indisponible',
+                            style: TextStyle(
+                              color: Color.lerp(neutralColor, Colors.white, local.animationValue),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13.0,
+                              letterSpacing: 1.5,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
-                              return 'Un numéro valide est à 8 chiffres';
-                            }
-                            return null;
+                          borderWidth: 1.5,
+                          iconAnimationType: AnimationType.onHover,
+                          animationDuration: Duration(milliseconds: 300),
+                          animationCurve: Curves.easeInOut,
+                          style: ToggleStyle(
+                            indicatorColor: isAvailable ? successColor : warningColor,
+                            borderColor: isAvailable ? successColor : warningColor,
+                            borderRadius: BorderRadius.circular(10.0),
+                            indicatorBorderRadius: BorderRadius.only(
+                              topLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
+                              bottomLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
+                              topRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
+                              bottomRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
+          
+                            )
+                            
+                          ),
+                          selectedIconScale: 1.0,
+                          onChanged: (value) => setState(() {
+                            isAvailable = value ;
+                          }),
+                          ),
+                        
+                        /// buttons
+                        GestureDetector(
+                          onTap: (){
+                            createWorker();
                           },
-                        ),
-                      ),
-                      AnimatedToggleSwitch.size(
-                        current: isAvailable, 
-                        values: const [false,true],
-                        iconOpacity: 1,
-                        indicatorSize: const Size.fromWidth(100),
-                        customIconBuilder: (context, local, global) => Text(
-                          local.value ? 'Disponible' : 'Indisponible',
-                          style: TextStyle(
-                            color: Color.lerp(neutralColor, Colors.white, local.animationValue),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13.0,
-                            letterSpacing: 1.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        borderWidth: 1.5,
-                        iconAnimationType: AnimationType.onHover,
-                        animationDuration: Duration(milliseconds: 300),
-                        animationCurve: Curves.easeInOut,
-                        style: ToggleStyle(
-                          indicatorColor: isAvailable ? successColor : warningColor,
-                          borderColor: isAvailable ? successColor : warningColor,
-                          borderRadius: BorderRadius.circular(10.0),
-                          indicatorBorderRadius: BorderRadius.only(
-                            topLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
-                            bottomLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
-                            topRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
-                            bottomRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
-
-                          )
-                          
-                        ),
-                        selectedIconScale: 1.0,
-                        onChanged: (value) => setState(() {
-                          isAvailable = value ;
-                        }),
-                        ),
-                      
-                      /// buttons
-                      GestureDetector(
-                        onTap: (){
-                          createWorker();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                          constraints: BoxConstraints(
-                            maxWidth: 200,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14.0),
-                            color: successColor600,
-                          ),
-                          child: Center(
-                            child: Text("Ajouter",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.0
-                            ),),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                            constraints: BoxConstraints(
+                              maxWidth: 200,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14.0),
+                              color: successColor600,
+                            ),
+                            child: Center(
+                              child: Text("Ajouter",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.0
+                              ),),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  )
                 )
-              )
-            ],
-            
+              ],
+              
+          ),
         ),
       )
     );
@@ -812,218 +821,220 @@ class _ClientDialog extends State<ClientDialog>{
       child:SizedBox(
         width: MediaQuery.sizeOf(context).width,
         height: MediaQuery.sizeOf(context).height*0.7,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-              Container(
-                padding: EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                Container(
+                  padding: EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+                  color: informationColor600,
                   ),
-                color: informationColor600,
-                ),
-                child: Center(
-                  child: Text(
-                      "AJOUTER CLIENT",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),),
-                ),
-              ),
-              
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0),
+                  child: Center(
+                    child: Text(
+                        "AJOUTER CLIENT",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),),
                   ),
-                  color: Colors.white
                 ),
-                width: MediaQuery.sizeOf(context).width,
-                height: MediaQuery.sizeOf(context).height*0.5,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// fields for worker
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _nameController,
-                          keyboardType: TextInputType.name,
-                          decoration: InputDecoration(
-                            labelText: "Nom et Prénom",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
+                
+                Container(
+                    padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                    ),
+                    color: Colors.white
+                  ),
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).height*0.5,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// fields for worker
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                              labelText: "Nom et Prénom",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
                               letterSpacing: 1.5,
-                              color: neutralColor200,
+                              color: primaryColor700,
                               fontWeight: FontWeight.bold
                             ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
-                          ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
-                              return 'Uniquement des caractères alphabétiques';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: "Téléphone",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
-                              letterSpacing: 1.5,
-                              color: neutralColor200,
-                              fontWeight: FontWeight.bold
-                            ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
-                          ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
-                              return 'Un numéro valide est à 8 chiffres';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                       SizedBox(
-                        width: 250,
-                        height: 100,
-                        child: TextFormField(
-                          controller: _noteController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            labelText: "Remarque",
-                            labelStyle: TextStyle(
-                              fontSize: 11,
-                              letterSpacing: 1.5,
-                              color: neutralColor200,
-                              fontWeight: FontWeight.bold
-                            ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
-                          ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold,
-
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                                return 'Uniquement des caractères alphabétiques';
+                              }
                               return null;
-                            }
-                            if (!RegExp(r'^[a-zA-Z0-9 ]*$').hasMatch(value)) {
-                              return 'Uniquement des caractères alphabétiques et numériques';
-                            }
-                            return null;
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Téléphone",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
+                              letterSpacing: 1.5,
+                              color: primaryColor700,
+                              fontWeight: FontWeight.bold
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
+                                return 'Un numéro valide est à 8 chiffres';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                         SizedBox(
+                          width: 250,
+                          height: 100,
+                          child: TextFormField(
+                            controller: _noteController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 5,
+                            decoration: InputDecoration(
+                              labelText: "Remarque",
+                              labelStyle: TextStyle(
+                                fontSize: 11,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
+                              letterSpacing: 1.5,
+                              color: primaryColor700,
+                              fontWeight: FontWeight.bold,
+          
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null;
+                              }
+                              if (!RegExp(r'^[a-zA-Z0-9 ]*$').hasMatch(value)) {
+                                return 'Uniquement des caractères alphabétiques et numériques';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                       
+                        /// buttons
+                        GestureDetector(
+                          onTap: (){
+                            ajouterClient();
                           },
-                        ),
-                      ),
-                     
-                      /// buttons
-                      GestureDetector(
-                        onTap: (){
-                          ajouterClient();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                          constraints: BoxConstraints(
-                            maxWidth: 200,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14.0),
-                            color: successColor600,
-                          ),
-                          child: Center(
-                            child: Text("Ajouter",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.0
-                            ),),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                            constraints: BoxConstraints(
+                              maxWidth: 200,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14.0),
+                              color: successColor600,
+                            ),
+                            child: Center(
+                              child: Text("Ajouter",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.0
+                              ),),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  )
                 )
-              )
-            ],
-            
+              ],
+              
+          ),
         ),
       )
     );

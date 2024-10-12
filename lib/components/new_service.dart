@@ -43,85 +43,87 @@ class _ServicePopup extends State<ServicePopup> {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: EdgeInsets.only(top: 25,left: 15,right: 15),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.all(15.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10.0),
-                topRight: Radius.circular(10.0),
-              ),
-            color: informationColor600,
-            ),
-            child: Center(
-              child: Text(
-                  "NOUVEAU SERVICE",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
-                  ),),
-            ),
-          ),
-              
-          Container(
-            padding: EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10.0),
-                bottomRight: Radius.circular(10.0),
-              ),
-              color: Colors.white
-            ),
-            width: MediaQuery.sizeOf(context).width,
-            height: MediaQuery.sizeOf(context).height*0.6,
-            child: PageView(
-              controller: _pageController,
-              //physics: _clientIdController > 0 ? ScrollPhysics(): NeverScrollableScrollPhysics(),
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AddClientPage(setId : _updateId),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            if(_clientIdController > 0){
-                              _pageController.nextPage(
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(5.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: Color(0xffeaebec),
-                            ),
-                            child: Icon(Iconsax.arrow_right_3,size: 20,)
-                            ),
-                        ),
-                      ],
-                    ),
-                  ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(15.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10.0),
+                  topRight: Radius.circular(10.0),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AddServicePage(id: _clientIdController),
+              color: informationColor600,
+              ),
+              child: Center(
+                child: Text(
+                    "NOUVEAU SERVICE",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),),
+              ),
+            ),
+                
+            Container(
+              padding: EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10.0),
+                  bottomRight: Radius.circular(10.0),
+                ),
+                color: Colors.white
+              ),
+              width: MediaQuery.sizeOf(context).width,
+              height: MediaQuery.sizeOf(context).height*0.6,
+              child: PageView(
+                controller: _pageController,
+                //physics: _clientIdController > 0 ? ScrollPhysics(): NeverScrollableScrollPhysics(),
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AddClientPage(setId : _updateId),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if(_clientIdController > 0){
+                                _pageController.nextPage(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: Color(0xffeaebec),
+                              ),
+                              child: Icon(Iconsax.arrow_right_3,size: 20,)
+                              ),
+                          ),
+                        ],
+                      ),
                     ],
-                ),
-              ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AddServicePage(id: _clientIdController),
+                      ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
        );
   }
@@ -962,7 +964,6 @@ class _AddServicePage extends State<AddServicePage>{
       time: _timeController.replaceAll(' ', ''),
       location: Location(coordinates : coordinates),
       nbWorkers: int.tryParse(_nbWorkersController.text) ?? 0,
-      nbDays: 1,
       equipment: _equipment ?? false,
       estimatedPrice: double.tryParse(_estimatedPriceController.text) ?? 0.0,
       finished: false,

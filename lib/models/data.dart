@@ -5,7 +5,7 @@ import 'package:sns_app/models/Service.dart';
 import 'package:sns_app/models/Worker.dart';
 
 class ApiService {
-  final String _baseUrl = 'http://localhost:3000/api';
+  final String _baseUrl = 'http://192.168.1.79:3000/api' ; //'http://localhost:3000/api';
 
 //////////////////////////////////////////////////
 //////////// Service Data Management ////////////
@@ -54,11 +54,10 @@ Future<List<Service>> fetchServiceByDate(String date) async {
   try {
     final response = await http.get(url);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200){
       final body = jsonDecode(response.body);
-      return (body as List)
-          .map((json) => Service.fromJson(json as Map<String, dynamic>))
-          .toList();
+      final testBody = (body as List).map((json) => Service.fromJson(json)).toList();
+      return testBody ;
     } else {
       return [];
     }

@@ -61,7 +61,7 @@ class _LocationPageState extends State<LocationPage> {
           SliverAppBar(
             pinned: true,
             stretch: false,
-            expandedHeight: MediaQuery.sizeOf(context).height-60,
+            expandedHeight: MediaQuery.sizeOf(context).height-100,
             backgroundColor: Colors.white,
             elevation: 0.0,
             actions: [
@@ -223,9 +223,9 @@ class _LocationPageState extends State<LocationPage> {
                       onTap: (){
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             _scrollController.animateTo(
-                              500, // Scroll to the bottom or specific position
+                              500, 
                               duration: Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
+                              curve: Curves.linear,
                             );
                           });
                         },
