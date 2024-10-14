@@ -995,9 +995,6 @@ class _ClientDialog extends State<ClientDialog>{
                               if (value == null || value.isEmpty) {
                                 return null;
                               }
-                              if (!RegExp(r'^[a-zA-Z0-9 ]*$').hasMatch(value)) {
-                                return 'Uniquement des caractères alphabétiques et numériques';
-                              }
                               return null;
                             },
                           ),

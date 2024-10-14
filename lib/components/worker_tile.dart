@@ -366,209 +366,211 @@ class _WorkerDialog extends State<WorkerDialog>{
       child:SizedBox(
         width: MediaQuery.sizeOf(context).width,
         height: MediaQuery.sizeOf(context).height*0.6,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-              Container(
-                padding: EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                Container(
+                  padding: EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+                  color: informationColor600,
                   ),
-                color: informationColor600,
-                ),
-                child: Center(
-                  child: Text(
-                      "MODIFIER OUVRIER",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),),
-                ),
-              ),
-              
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0),
+                  child: Center(
+                    child: Text(
+                        "MODIFIER OUVRIER",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),),
                   ),
-                  color: Colors.white
                 ),
-                width: MediaQuery.sizeOf(context).width,
-                height: MediaQuery.sizeOf(context).height*0.5,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// fields for worker
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _nameController,
-                          keyboardType: TextInputType.name,
-                          decoration: InputDecoration(
-                            labelText: "Nom et Prénom",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
+                
+                Container(
+                    padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                    ),
+                    color: Colors.white
+                  ),
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).height*0.5,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// fields for worker
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                              labelText: "Nom et Prénom",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
                               letterSpacing: 1.5,
-                              color: neutralColor200,
+                              color: primaryColor700,
                               fontWeight: FontWeight.bold
                             ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                                return 'Uniquement des caractères alphabétiques';
+                              }
+                              return null;
+                            },
                           ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
-                              return 'Uniquement des caractères alphabétiques';
-                            }
-                            return null;
-                          },
                         ),
-                      ),
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: "Téléphone",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Téléphone",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
                               letterSpacing: 1.5,
-                              color: neutralColor200,
+                              color: primaryColor700,
                               fontWeight: FontWeight.bold
                             ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
+                                return 'Un numéro valide est à 8 chiffres';
+                              }
+                              return null;
+                            },
                           ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
+                        ),
+                        AnimatedToggleSwitch.size(
+                          current: isAvailable, 
+                          values: const [false,true],
+                          iconOpacity: 1,
+                          indicatorSize: const Size.fromWidth(100),
+                          customIconBuilder: (context, local, global) => Text(
+                            local.value ? 'Disponible' : 'Indisponible',
+                            style: TextStyle(
+                              color: Color.lerp(neutralColor, Colors.white, local.animationValue),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13.0,
+                              letterSpacing: 1.5,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
-                              return 'Un numéro valide est à 8 chiffres';
-                            }
-                            return null;
+                          borderWidth: 1.5,
+                          iconAnimationType: AnimationType.onHover,
+                          animationDuration: Duration(milliseconds: 300),
+                          animationCurve: Curves.easeInOut,
+                          style: ToggleStyle(
+                            indicatorColor: isAvailable ? successColor : warningColor,
+                            borderColor: isAvailable ? successColor : warningColor,
+                            borderRadius: BorderRadius.circular(10.0),
+                            indicatorBorderRadius: BorderRadius.only(
+                              topLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
+                              bottomLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
+                              topRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
+                              bottomRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
+          
+                            )
+                            
+                          ),
+                          selectedIconScale: 1.0,
+                          onChanged: (value) => setState(() {
+                            isAvailable = value ;
+                          }),
+                          ),
+                        
+                        /// buttons
+                        GestureDetector(
+                          onTap: (){
+                            updateWorker();
                           },
-                        ),
-                      ),
-                      AnimatedToggleSwitch.size(
-                        current: isAvailable, 
-                        values: const [false,true],
-                        iconOpacity: 1,
-                        indicatorSize: const Size.fromWidth(100),
-                        customIconBuilder: (context, local, global) => Text(
-                          local.value ? 'Disponible' : 'Indisponible',
-                          style: TextStyle(
-                            color: Color.lerp(neutralColor, Colors.white, local.animationValue),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13.0,
-                            letterSpacing: 1.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        borderWidth: 1.5,
-                        iconAnimationType: AnimationType.onHover,
-                        animationDuration: Duration(milliseconds: 300),
-                        animationCurve: Curves.easeInOut,
-                        style: ToggleStyle(
-                          indicatorColor: isAvailable ? successColor : warningColor,
-                          borderColor: isAvailable ? successColor : warningColor,
-                          borderRadius: BorderRadius.circular(10.0),
-                          indicatorBorderRadius: BorderRadius.only(
-                            topLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
-                            bottomLeft: isAvailable ? Radius.circular(0.0) : Radius.circular(8) ,
-                            topRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
-                            bottomRight: isAvailable ? Radius.circular(8.0) : Radius.circular(0) ,
-
-                          )
-                          
-                        ),
-                        selectedIconScale: 1.0,
-                        onChanged: (value) => setState(() {
-                          isAvailable = value ;
-                        }),
-                        ),
-                      
-                      /// buttons
-                      GestureDetector(
-                        onTap: (){
-                          updateWorker();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                          constraints: BoxConstraints(
-                            maxWidth: 200,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14.0),
-                            color: informationColor,
-                          ),
-                          child: Center(
-                            child: Text("Confirmer",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.0
-                            ),),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                            constraints: BoxConstraints(
+                              maxWidth: 200,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14.0),
+                              color: informationColor,
+                            ),
+                            child: Center(
+                              child: Text("Confirmer",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.0
+                              ),),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  )
                 )
-              )
-            ],
-            
+              ],
+              
+          ),
         ),
       )
     );

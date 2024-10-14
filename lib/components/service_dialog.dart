@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:sns_app/components/Dialog_Widget.dart';
-import 'package:sns_app/models/Client.dart';
 import 'package:sns_app/models/Service.dart';
 import 'package:sns_app/models/colors.dart';
 import 'package:sns_app/models/data.dart';
@@ -26,8 +25,6 @@ class _ServiceDialog extends State<ServiceDialog> {
   String townName = "Chargement..." ;
   final TextEditingController _nbWorkersController = TextEditingController(text: '0');
   final TextEditingController _estimatedPriceController = TextEditingController(text: '0.00');
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   List<double> coordinates = [];
   bool? _equipment = false;
 
@@ -37,8 +34,6 @@ class _ServiceDialog extends State<ServiceDialog> {
   void dispose(){
     _nbWorkersController.dispose();
     _estimatedPriceController.dispose();
-    _phoneController.dispose();
-    _nameController.dispose();
     super.dispose();
   }
   @override
@@ -135,106 +130,6 @@ class _ServiceDialog extends State<ServiceDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 10,),  
-          
-                          ///Modification that appear in update
-                          if(_ISUPDATE)...[
-                            Row(
-                              children: [
-                                Container(height: 1,width: 20,color: neutralColor100,),
-                                Text("  Modifier Client  ",style: TextStyle(color: neutralColor200),),
-                                Container(height: 1,width: 190,color: neutralColor100,),
-                              ],
-                            ),
-                            SizedBox(height: 20,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 170,
-                                  height: 50,
-                                  child: TextField(
-                                    controller: _nameController,
-                                    keyboardType: TextInputType.name,
-                                        decoration: InputDecoration(
-                                          labelText: "Nom de Client",
-                                          labelStyle: TextStyle(
-                                            fontSize: 12,
-                                            letterSpacing: 1.5,
-                                            color: neutralColor200,
-                                            fontWeight: FontWeight.bold
-                                          ),
-                                          filled: true,
-                                          fillColor: colorFromHSV(220, 0.06, 1),
-                                          suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
-                                          focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                                gapPadding: 2.0,
-                                              ),
-                                          enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                borderSide: BorderSide(color: informationColor100,width: 1,),
-                                                gapPadding: 0,
-                                              ),
-                                        ),
-                                        style:  TextStyle(
-                                          fontSize: 14,
-                                          letterSpacing: 1.5,
-                                          color: primaryColor700,
-                                          fontWeight: FontWeight.bold
-                                        ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 140,
-                                  height: 50,
-                                  child: TextField(
-                                    controller: _phoneController,
-                                    keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          labelText: "Téléphone",
-                                          labelStyle: TextStyle(
-                                            fontSize: 12,
-                                            letterSpacing: 1.5,
-                                            color: neutralColor200,
-                                            fontWeight: FontWeight.bold
-                                          ),
-                                          filled: true,
-                                          fillColor: colorFromHSV(220, 0.06, 1),
-                                          suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
-                                          focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                                gapPadding: 2.0,
-                                              ),
-                                          enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                borderSide: BorderSide(color: informationColor100,width: 1,),
-                                                gapPadding: 0,
-                                              ),
-                                        ),
-                                        style:  TextStyle(
-                                          fontSize: 14,
-                                          letterSpacing: 1.5,
-                                          color: primaryColor700,
-                                          fontWeight: FontWeight.bold
-                                        ),
-                                  ),
-                                ),
-                                ],
-                            ),
-                            SizedBox(height: 30,),
-                            Row(
-                              children: [
-                                Container(height: 1,width: 20,color: neutralColor100,),
-                                Text("  Modifier Service  ",style: TextStyle(color: neutralColor200),),
-                                Container(height: 1,width: 185,color: neutralColor100,),
-                              ],
-                            ),
-                            SizedBox(height: 20,),
-                          ],
-          
                         ///Main content to display data and update it
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -625,17 +520,17 @@ class _ServiceDialog extends State<ServiceDialog> {
                                   ),
                                 GestureDetector(
                                     onTap: (){
-                                      setState(() {
-                                        _typeController = service.type;
-                                        _nbWorkersController.text = '${service.nbWorkers}' ;
-                                        _estimatedPriceController.text = '${service.estimatedPrice}' ;
-                                        _equipment = service.equipment ;
-                                        _dateController = service.date ;
-                                        _timeController = service.time.replaceAll(':', ' : ');
-                                        _phoneController.text = service.client.phoneNumber ;
-                                        _nameController.text = service.client.name ;
+                                      if(mounted){
+                                        setState(() {
+                                          _typeController = service.type;
+                                          _nbWorkersController.text = '${service.nbWorkers}' ;
+                                          _estimatedPriceController.text = '${service.estimatedPrice}' ;
+                                          _equipment = service.equipment ;
+                                          _dateController = service.date ;
+                                          _timeController = service.time.replaceAll(':', ' : ');
                                         _ISUPDATE = !_ISUPDATE ;
-                                      });
+                                        });
+                                      }
                                     },
                                     child: Container(
                                       height: 45,
@@ -669,7 +564,7 @@ class _ServiceDialog extends State<ServiceDialog> {
                                 GestureDetector(
                                     onTap: (){
                                       setState(() {
-                                        _ISUPDATE = !_ISUPDATE ;
+                                        _ISUPDATE = false ;
                                       });
                                     },
                                     child: Container(
@@ -698,7 +593,6 @@ class _ServiceDialog extends State<ServiceDialog> {
                                             onChange: (isOk) async {
                                               if(isOk){
                                                 updateService(service);
-                                                Navigator.of(context).pop();       
                                               }
                                             });
                                       });
@@ -729,14 +623,14 @@ class _ServiceDialog extends State<ServiceDialog> {
           
                       ),
                     ),
-                              ),
+                ),
               ],
             ),
         ),
       );
   }
   
-  void updateService(Service service) {
+  void  updateService(Service service) {
         setState(() {
           service.type = _typeController ?? service.type ;
           service.nbWorkers = int.tryParse(_nbWorkersController.text) ?? service.nbWorkers;
@@ -747,76 +641,29 @@ class _ServiceDialog extends State<ServiceDialog> {
           service.location.coordinates = coordinates ;
         });
 
-    /// update le client 
-    if(service.client.name != _nameController.text || service.client.phoneNumber != _phoneController.text){
-        final Client client = Client(
-                                id: service.client.id, 
-                                name: _nameController.text, 
-                                phoneNumber: _phoneController.text,
-                                isDeleted: false);
-        ApiService().updateClient(client)
-          .then((response) {
-              setState(() {
-              if (response.statusCode == 200 || response.statusCode == 201) {
-                ApiService().updateService(service).then((response) {
-                  setState(() {
-                        if (response.statusCode == 200 || response.statusCode == 201) {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return SuccessWidget(validationMessage: 'Client et Service a été modifier avec succés !' ,);
-                              },
-                            );
-                            _ISUPDATE = !_ISUPDATE ;
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertWidget(errorMessage: 'Échec de la mise à jour du Service. Veuillez réessayer.' );
-                              },
-                            );
-                        }
-                    });
-                });
-              } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertWidget(errorMessage: 'Échec de la mise à jour du client. Veuillez réessayer : $response' );
-                    },
-                  );
-              }
-          });
-        });
-    }
-    else{
-      ApiService().updateService(service).then((response) {
-         setState(() {
-              if (response.statusCode == 200 || response.statusCode == 201) {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return SuccessWidget(validationMessage: 'Service a été modifier avec succés !' ,);
-                    },
-                  );
-                  _ISUPDATE = !_ISUPDATE ;
-              } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertWidget(errorMessage: 'Échec de la mise à jour du Service. Veuillez réessayer.' );
-                    },
-                  );
-              }
-          });
+      ApiService().updateService(service).then((response) async {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return SuccessWidget(validationMessage: 'Service a été modifier avec succés !' ,);
+              },
+            );
+        } else {
+         await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertWidget(errorMessage: 'Échec de la mise à jour du Service. Veuillez réessayer.' );
+              },
+            );
+        }      
+      }).then((onValue){
+        Navigator.of(context).pop(); 
       });
-    }
-      
   }
  
   void deleteService(Service service){
     ApiService().deleteService(service.id).then((response) {
-         setState(() {
               if (response.statusCode == 200 || response.statusCode == 201) {
                 showDialog(
                     context: context,
@@ -832,7 +679,6 @@ class _ServiceDialog extends State<ServiceDialog> {
                     },
                   );
               }
-          });
       });
     
   }

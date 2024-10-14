@@ -17,7 +17,8 @@ class ClientTile extends StatefulWidget{
 
 class _ClientTile extends State<ClientTile>{
   bool isUpdate = false ;
-  
+  int nbServices = 0 ;
+
   @override
   Widget build(BuildContext context) {
     var client = widget.client ;
@@ -97,6 +98,7 @@ class _ClientTile extends State<ClientTile>{
                               FutureBuilder(
                                 future: getNbServiceForClient(), 
                                 builder:(context, snapshot) {
+                                  nbServices = snapshot.data??0 ;
                                   return Text('${snapshot.data}',style: TextStyle(
                                     fontSize: 10,
                                     color: informationColor200,
@@ -186,13 +188,16 @@ class _ClientTile extends State<ClientTile>{
                     Spacer(),
                     GestureDetector(
                     onTap: (){
+                      String errorMessage = client.isDeleted & (nbServices>0) 
+                                            ? "Êtes-vous sûr de vouloir supprimer ce Client et ses services : $nbServices service(s) ?"    
+                                            : "Êtes-vous sûr de vouloir supprimer ce Client ?" ;
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return AlertWidget(errorMessage: "Êtes-vous sûr de vouloir supprimer ce Client ?",isFooter: true,
+                          return AlertWidget(errorMessage: errorMessage,isFooter: true,
                           onChange: (isOk) async {
                             if(isOk){
-                              client.isDeleted ? deleteClient() : sofDeleteClient() ;
+                              client.isDeleted ? nbServices>0 ? deleteClientAndServices()  : deleteClient() : sofDeleteClient() ;
                             }
                           });
                         });
@@ -311,11 +316,10 @@ class _ClientTile extends State<ClientTile>{
                 },
               );
       }else {
-        String errorMessage = "Échec de la suppression d'Ouvrier. Veuillez réessayer." ;
         await showDialog(
           context: context,
           builder: (BuildContext context) {
-            return AlertWidget(errorMessage: errorMessage,);
+            return AlertWidget(errorMessage: "Échec de la suppression de client. Veuillez réessayer.",);
           },
         );
       }
@@ -332,11 +336,10 @@ class _ClientTile extends State<ClientTile>{
                 },
               );
       }else {
-        String errorMessage = "Échec de la suppression de client. Veuillez réessayer." ;
         await showDialog(
           context: context,
           builder: (BuildContext context) {
-            return AlertWidget(errorMessage: errorMessage,);
+            return AlertWidget(errorMessage: "Échec de la suppression de client. Veuillez réessayer.",);
           },
         );
       }
@@ -366,6 +369,40 @@ class _ClientTile extends State<ClientTile>{
         );
       }
     });
+  }
+  
+  void deleteClientAndServices() async {
+
+    ApiService().deleteClientServices(widget.client.id).then((response) async {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ApiService().permanentlyDeleteClient(widget.client.id).then((response) async {
+            if (response.statusCode == 200 || response.statusCode == 201) {
+                    await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SuccessWidget(validationMessage:'Client ${widget.client.name} et ses Services a été définitivement supprimer avec succés !' ,);
+                      },
+                    );
+            }else {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertWidget(errorMessage: "Échec de la suppression de client. Veuillez réessayer.",);
+                },
+              );
+            }
+          });
+        }
+        else{
+          await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertWidget(errorMessage: "Échec de la suppression de client. Veuillez réessayer.",);
+              },
+          );
+        }
+    });
+
   }
 }
 
@@ -404,218 +441,217 @@ class _ClientDialog extends State<ClientDialog>{
       child:SizedBox(
         width: MediaQuery.sizeOf(context).width,
         height: MediaQuery.sizeOf(context).height*0.7,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-              Container(
-                padding: EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                Container(
+                  padding: EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+                  color: informationColor600,
                   ),
-                color: informationColor600,
-                ),
-                child: Center(
-                  child: Text(
-                      "MODIFIER CLIENT",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),),
-                ),
-              ),
-              
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0),
+                  child: Center(
+                    child: Text(
+                        "MODIFIER CLIENT",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),),
                   ),
-                  color: Colors.white
                 ),
-                width: MediaQuery.sizeOf(context).width,
-                height: MediaQuery.sizeOf(context).height*0.5,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// fields for worker
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _nameController,
-                          keyboardType: TextInputType.name,
-                          decoration: InputDecoration(
-                            labelText: "Nom et Prénom",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
+                
+                Container(
+                    padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                    ),
+                    color: Colors.white
+                  ),
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).height*0.5,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// fields for worker
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                              labelText: "Nom et Prénom",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
                               letterSpacing: 1.5,
-                              color: neutralColor200,
+                              color: primaryColor700,
                               fontWeight: FontWeight.bold
                             ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Icons.person,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
-                          ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
-                              return 'Uniquement des caractères alphabétiques';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 250,
-                        height: 60,
-                        child: TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: "Téléphone",
-                            labelStyle: TextStyle(
-                              fontSize: 12,
-                              letterSpacing: 1.5,
-                              color: neutralColor200,
-                              fontWeight: FontWeight.bold
-                            ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
-                          ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le champ ne peut pas être vide';
-                            }
-                            if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
-                              return 'Un numéro valide est à 8 chiffres';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                       SizedBox(
-                        width: 250,
-                        height: 100,
-                        child: TextFormField(
-                          controller: _noteController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            labelText: "Remarque",
-                            labelStyle: TextStyle(
-                              fontSize: 11,
-                              letterSpacing: 1.5,
-                              color: neutralColor200,
-                              fontWeight: FontWeight.bold
-                            ),
-                            filled: true,
-                            fillColor: colorFromHSV(220, 0.06, 1),
-                            focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor,width: 1.5,),
-                                  gapPadding: 2.0,
-                                ),
-                            enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(color: informationColor100,width: 1,),
-                                  gapPadding: 0,
-                                ),
-                          ),
-                          style:  TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                            color: primaryColor700,
-                            fontWeight: FontWeight.bold,
-
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[a-zA-Z]+( [a-zA-Z]+){0,2}$').hasMatch(value)) {
+                                return 'Uniquement des caractères alphabétiques';
+                              }
                               return null;
-                            }
-                            if (!RegExp(r'^[a-zA-Z0-9 ]*$').hasMatch(value)) {
-                              return 'Uniquement des caractères alphabétiques et numériques';
-                            }
-                            return null;
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: 250,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Téléphone",
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              suffixIcon: Icon(Iconsax.call5,size: 18,color: primaryColor,),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
+                              letterSpacing: 1.5,
+                              color: primaryColor700,
+                              fontWeight: FontWeight.bold
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le champ ne peut pas être vide';
+                              }
+                              if (!RegExp(r'^[0-9]{8}$').hasMatch(value)) {
+                                return 'Un numéro valide est à 8 chiffres';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                         SizedBox(
+                          width: 250,
+                          height: 100,
+                          child: TextFormField(
+                            controller: _noteController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 5,
+                            decoration: InputDecoration(
+                              labelText: "Remarque",
+                              labelStyle: TextStyle(
+                                fontSize: 11,
+                                letterSpacing: 1.5,
+                                color: neutralColor200,
+                                fontWeight: FontWeight.bold
+                              ),
+                              filled: true,
+                              fillColor: colorFromHSV(220, 0.06, 1),
+                              focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor,width: 1.5,),
+                                    gapPadding: 2.0,
+                                  ),
+                              enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(color: informationColor100,width: 1,),
+                                    gapPadding: 0,
+                                  ),
+                            ),
+                            style:  TextStyle(
+                              fontSize: 14,
+                              letterSpacing: 1.5,
+                              color: primaryColor700,
+                              fontWeight: FontWeight.bold,
+          
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null;
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                       
+                        /// buttons
+                        GestureDetector(
+                          onTap: (){
+                            updateClient();
                           },
-                        ),
-                      ),
-                     
-                      /// buttons
-                      GestureDetector(
-                        onTap: (){
-                          updateClient();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                          constraints: BoxConstraints(
-                            maxWidth: 200,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14.0),
-                            color: informationColor,
-                          ),
-                          child: Center(
-                            child: Text("Confirmer",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.0
-                            ),),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                            constraints: BoxConstraints(
+                              maxWidth: 200,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14.0),
+                              color: informationColor,
+                            ),
+                            child: Center(
+                              child: Text("Confirmer",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.0
+                              ),),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  )
                 )
-              )
-            ],
-            
+              ],
+              
+          ),
         ),
       )
     );

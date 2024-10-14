@@ -134,6 +134,21 @@ Future<http.Response> deleteService(int serviceId) async {
   }
 }
 
+//// delete client's services methode
+  Future<http.Response> deleteClientServices(int clientId) async {
+    final url = Uri.parse('$_baseUrl/deleteClientServices/$clientId'); 
+    try {
+      final response = await http.delete(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    return response;
+    } catch (e) {
+      throw Exception('Failed to delete service: $e');
+    }
+
+  }
+
 //////////////////////////////////////////////////
 //////////// Client Data management //////////////
 //////////////////////////////////////////////////
@@ -379,4 +394,19 @@ Future <List<Worker>> getServiceWorker(int id) async {
         throw Exception('Failed to connect to the server: $e');
     }
   }
+
+/// delete worker from service methode
+  Future<http.Response> deleteWorkerFromService(int serviceId,int workerId) async {
+    final url = Uri.parse('$_baseUrl/service/$serviceId/worker/$workerId');
+    try {
+      final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+      return response ;
+    } catch (e) {
+      throw Exception('Failed to connect to the server: $e');
+    }
+  }
+
 }
