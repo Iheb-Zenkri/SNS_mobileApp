@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:badges/badges.dart' as badge;
+import 'package:sns_app/models/User.dart';
 import 'package:sns_app/models/colors.dart';
 import 'package:sns_app/pages/calendar_page.dart';
 import 'package:sns_app/components/new_service.dart';
@@ -23,7 +24,8 @@ class _HomePageState extends State<Homepage>{
     var counter = 10;
 
     var selectedIndex = 0;
-        
+    late Future<String> username ;
+    late Future<String> phoneNumber ;
 
     static const List<StatefulWidget> widgetOptions = <StatefulWidget>[
           AccueilPage(),
@@ -39,6 +41,13 @@ class _HomePageState extends State<Homepage>{
         return ServicePopup();
       },
     );
+  }
+
+  @override
+  void initState() {
+    username = User.custom().getUsername();
+    phoneNumber = User.custom().getPhoneNumber();
+    super.initState();
   }
   
   @override
@@ -98,18 +107,32 @@ class _HomePageState extends State<Homepage>{
           child: Stack(
             children:[ ListView(
               children: [
-                UserAccountsDrawerHeader(
-                  accountName: const Text('Zenkri Iheb',style: TextStyle(color: Colors.white,letterSpacing: 2.0),),
-                  accountEmail: const Text('+216 25240471',style: TextStyle(color: Colors.white,letterSpacing: 2.0)),
-                  currentAccountPicture: CircleAvatar(
-                    child: ClipOval( child: Image.asset('lib/icons/userpic.jpg'),),
-                  ),
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-              
-                  ),
-                ),
-            
+                FutureBuilder(
+                  future: username,
+                  builder:(context, snapshot1) {
+                   return FutureBuilder(
+                      future: phoneNumber, 
+                      builder:(context, snapshot2) {
+                        if (!snapshot1.hasData || !snapshot2.hasData) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot1.hasError || !snapshot2.hasData) {
+                          return const Center(child: Text('Erreur lors de charger les données'));
+                        }
+                        return UserAccountsDrawerHeader(
+                          accountName: Text(snapshot1.data!,style: TextStyle(color: Colors.white,letterSpacing: 2.0),),
+                          accountEmail: Text('+216 ${snapshot2.data}',style: TextStyle(color: Colors.white,letterSpacing: 2.0)),
+                          currentAccountPicture: CircleAvatar(
+                            child: ClipOval( child: Image.asset('lib/icons/userpic.jpg'),),
+                          ),
+                          decoration: BoxDecoration(
+                            color: primaryColor,
+                      
+                          ),
+                        );
+                      },);
+                 },),
+                
                 ListTile(
                   leading: Icon(Iconsax.location),
                   title: Text('Services'),

@@ -1,7 +1,8 @@
 //import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sns_app/pages/landing_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:sns_app/pages/landing_page.dart';
+import 'package:sns_app/pages/login_page.dart';
 
 /*/ ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
@@ -10,21 +11,6 @@ import 'dart:ui_web' as ui;
 *///
 
 void main() {
-/*
- if (kIsWeb) {
-    ui.platformViewRegistry.registerViewFactory(
-      'plugins.flutter.io/google_maps',
-      (int? viewId) {
-        final IFrameElement element = IFrameElement()
-          ..src = 'https://maps.google.com/maps?q=Djerba&output=embed'  // Example URL
-          ..style.border = 'none'  // Optional: remove iframe border
-          ..style.height = '670px'
-          ..style.width = '375px';
-        return element;  // Return the created HTML iframe element
-      },
-    );
-  }
-*/
   runApp(const MyApp());
 }
 
@@ -45,7 +31,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const Homepage(),
+      home: const LoginPage(),// Homepage(), 
       theme: ThemeData(
         fontFamily: 'Rubik',
         textTheme: const TextTheme(

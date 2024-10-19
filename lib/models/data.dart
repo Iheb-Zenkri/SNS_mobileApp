@@ -1,52 +1,65 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;  
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sns_app/models/Client.dart';
 import 'package:sns_app/models/Service.dart';
+import 'package:sns_app/models/User.dart';
 import 'package:sns_app/models/Worker.dart';
 
 class ApiService {
-  final String _baseUrl = 'http://192.168.1.79:3000/api' ; //'http://localhost:3000/api';
-
+  final String _baseUrl = 'http://192.168.1.79:3000/api' ; 
 //////////////////////////////////////////////////
-//////////// Service Data Management ////////////
+///////////// User Data Management //////////////
 ////////////////////////////////////////////////
 
-//// get all Services
-  Future<List<Service>> fetchAllServices() async {
-    final url = Uri.parse('$_baseUrl/allServices');
+Future<http.Response> loginUser(String username, String password) async {
+    final url = Uri.parse('$_baseUrl/loginUser');
     try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-
-        final body = jsonDecode(response.body);
-        return (body as List).map((json) => Service.fromJson(json as Map<String, dynamic>)).toList();
-
-      } else {
-        throw Exception('Failed to load services, status code: ${response.statusCode}');
-      }
+      final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'username' : username,
+            'password' : password
+          }),
+        );
+        return response ;
     } catch (e) {
       throw Exception('Failed to connect to the server: $e');
     }
   }
 
-//// get service by id methode
-  Future<Service> fetchServiceById(int id) async {
-  final url = Uri.parse('$_baseUrl/service/$id');
-
+Future<bool> getUserImage() async {
+  final username = await User.custom().getUsername() ;
+  final url = Uri.parse('$_baseUrl/getImage/${Uri.encodeComponent(username)}');
   try {
     final response = await http.get(url);
+    if(response.statusCode == 200){
+      final directory = await getApplicationDocumentsDirectory();
+      final imageDirectory = Directory(p.join(directory.path, 'icons'));
 
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      return Service.fromJson(body as Map<String, dynamic>);
-    } else {
-      throw Exception('Failed to load service, status code: ${response.statusCode}');
+       if (!await imageDirectory.exists()) {
+            await imageDirectory.create(recursive: true);
+      }
+      final imageName = await User.custom().getPicName() ;
+      final imagePath = p.join(imageDirectory.path, imageName);
+      print(imagePath);
+      final imageFile = File(imagePath);
+      await imageFile.writeAsBytes(response.bodyBytes);
     }
+    return true ;
   } catch (e) {
-    throw Exception('Failed to connect to the server: $e');
-  }
+      throw Exception('Failed to connect to the server: $e');  }
 }
+
+
+//////////////////////////////////////////////////
+//////////// Service Data Management ////////////
+////////////////////////////////////////////////
+
 
 //// get service by date methode
 Future<List<Service>> fetchServiceByDate(String date) async {
@@ -90,8 +103,9 @@ Future<List<int>> fetchServiceCountByMonth(String date) async {
 
 //// post service methode
   Future<http.Response> createService(Service service) async {
-      final url = Uri.parse('$_baseUrl/addService');
-      
+      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      final int? userId = sharedPreferences.getInt('id');
+      final url = Uri.parse('$_baseUrl/$userId/addService');
       try {
         final response = await http.post(
           url,
@@ -107,7 +121,10 @@ Future<List<int>> fetchServiceCountByMonth(String date) async {
 
 //// update service methode
   Future<http.Response> updateService(Service service) async {
-    final url = Uri.parse('$_baseUrl/updateService/${service.id}');
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/updateService/${service.id}');
+    
     try {
       final response = await http.put(
         url,
@@ -122,7 +139,10 @@ Future<List<int>> fetchServiceCountByMonth(String date) async {
 
 //// delete service methode
 Future<http.Response> deleteService(int serviceId) async {
-  final url = Uri.parse('$_baseUrl/deleteService/$serviceId');
+  final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  final int? userId = sharedPreferences.getInt('id');
+  final url = Uri.parse('$_baseUrl/$userId/deleteService/$serviceId');
+  
   try {
     final response = await http.delete(
       url,
@@ -136,7 +156,10 @@ Future<http.Response> deleteService(int serviceId) async {
 
 //// delete client's services methode
   Future<http.Response> deleteClientServices(int clientId) async {
-    final url = Uri.parse('$_baseUrl/deleteClientServices/$clientId'); 
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/deleteClientServices/$clientId'); 
+    
     try {
       final response = await http.delete(
       url,

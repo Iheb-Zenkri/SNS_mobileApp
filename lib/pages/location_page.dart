@@ -289,7 +289,7 @@ class _LocationPageState extends State<LocationPage> {
                         onTap: () async {
                             final DateTime? dateTime = await showDatePicker(
                               context: context, 
-                              firstDate: DateTime.now(), 
+                              firstDate: DateTime(2024,10,1), 
                               lastDate: DateTime.now().add(Duration(days: 365)),
                               initialEntryMode: DatePickerEntryMode.calendarOnly,
                               builder: (BuildContext context, Widget? child) {
