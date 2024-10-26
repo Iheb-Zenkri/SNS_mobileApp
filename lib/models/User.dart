@@ -44,16 +44,24 @@ class User {
    Future savePrefrences() async{
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       await sharedPreferences.setString("username", username);
-      await sharedPreferences.setString("phoneNumber", phoneNumber);
-      await sharedPreferences.setInt("id", id);
       await sharedPreferences.setString("password", password!);
+      await sharedPreferences.setString("phoneNumber", phoneNumber);  
+      await sharedPreferences.setInt("id", id);
       await sharedPreferences.setString("picName", picName!);
       //ApiService().getUserImage();
    }
 
+  Future deletePrefrences() async{
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.clear();
+   }
   Future<String> getUsername() async{
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     return  sharedPreferences.getString("username")??"";
+  }
+  Future<String> getPassword() async{
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    return  sharedPreferences.getString("password")??"";
   }
 
   Future<String> getPhoneNumber() async{
@@ -65,6 +73,7 @@ class User {
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     return  sharedPreferences.getString("picName")??"";
   }
+
 
 
 }

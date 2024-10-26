@@ -24,11 +24,19 @@ class _LoginPage extends State<LoginPage> {
   String? checkUsername ;
   String? checckPassword ;
 
+  bool _isLoading = true;
+
+  @override
+  void initState(){
+    super.initState();
+    _checkUsername();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
+      body: _isLoading ? Center(child: CircularProgressIndicator(),)
+        : Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 40),
         child: SingleChildScrollView(
           child: Column(
@@ -203,6 +211,7 @@ class _LoginPage extends State<LoginPage> {
       ApiService().loginUser(usernameController.text, passwordController.text).then((response) async{
         if(response.statusCode == 200){
           final User user = User.fromJson(jsonDecode(response.body));
+          user.password = passwordController.text;
           user.savePrefrences();
           Navigator.pushReplacement(
             context,
@@ -229,4 +238,21 @@ class _LoginPage extends State<LoginPage> {
       });
     }
   }
+
+  Future<void> _checkUsername() async {
+ 
+  await Future.delayed(Durations.medium4);
+ 
+  final username = await User.custom().getUsername();
+  if (username.isNotEmpty) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Homepage()),
+    );
+  }else{
+    setState(() {
+    _isLoading = false ;
+  });
+  }
+}
 }

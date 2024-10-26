@@ -8,6 +8,7 @@ import 'package:sns_app/models/Client.dart';
 import 'package:sns_app/models/Service.dart';
 import 'package:sns_app/models/User.dart';
 import 'package:sns_app/models/Worker.dart';
+import 'package:sns_app/models/Notification.dart';
 
 class ApiService {
   final String _baseUrl = 'http://192.168.1.79:3000/api' ; 
@@ -55,6 +56,23 @@ Future<bool> getUserImage() async {
       throw Exception('Failed to connect to the server: $e');  }
 }
 
+Future<User> getUser(int userId) async {
+    final url = Uri.parse('$_baseUrl/user/$userId');
+    try {
+      final response = await http.get(url);
+
+      if(response.statusCode == 200){
+        final body = jsonDecode(response.body);
+        return User.fromJson(body) ;
+      }
+      else{
+        return User.custom() ;
+      }
+    } catch (e) {
+      return User.custom() ;
+    }
+
+}
 
 //////////////////////////////////////////////////
 //////////// Service Data Management ////////////
@@ -229,7 +247,9 @@ Future<int> getNbServiceForClient(int clientId) async{
 
 /// post client methode
   Future<http.Response> createClient(Client client) async {
-      final url =  Uri.parse('$_baseUrl/addClient');
+      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      final int? userId = sharedPreferences.getInt('id');
+      final url =  Uri.parse('$_baseUrl/$userId/addClient');
       try{
         final response = await http.post(
           url,
@@ -245,7 +265,9 @@ Future<int> getNbServiceForClient(int clientId) async{
 
 /// update client methode
   Future<http.Response> updateClient(Client client) async {
-  final url = Uri.parse('$_baseUrl/updateClient/${client.id}');
+  final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  final int? userId = sharedPreferences.getInt('id');
+  final url = Uri.parse('$_baseUrl/$userId/updateClient/${client.id}');
   try {
     final response = await http.put(
       url,
@@ -260,7 +282,9 @@ Future<int> getNbServiceForClient(int clientId) async{
 
 /// soft delete client methode
   Future<http.Response> softDeleteClient(int clientId) async {
-    final url = Uri.parse('$_baseUrl/deleteClient/$clientId');
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/deleteClient/$clientId');
     try {
       final response = await http.delete(
         url,
@@ -274,7 +298,9 @@ Future<int> getNbServiceForClient(int clientId) async{
 
 /// permanently delete client methode
   Future<http.Response> permanentlyDeleteClient(int clientId) async {
-    final url = Uri.parse('$_baseUrl/permanentlyDeleteClient/$clientId');
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/permanentlyDeleteClient/$clientId');
     try {
       final response = await http.delete(
         url,
@@ -324,7 +350,9 @@ Future<int> getNbServiceForClient(int clientId) async{
 
 ///post worker methode
   Future<http.Response> createWorker(Worker worker) async {
-    final url =  Uri.parse('$_baseUrl/addWorker');
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url =  Uri.parse('$_baseUrl/$userId/addWorker');
     try{
       final response = await http.post(
         url,
@@ -339,7 +367,9 @@ Future<int> getNbServiceForClient(int clientId) async{
 
 /// update worker methode
   Future<http.Response> updateWorker(Worker worker) async {
-  final url = Uri.parse('$_baseUrl/updateWorker/${worker.id}');
+  final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  final int? userId = sharedPreferences.getInt('id');
+  final url = Uri.parse('$_baseUrl/$userId/updateWorker/${worker.id}');
   try {
     final response = await http.put(
       url,
@@ -354,7 +384,9 @@ Future<int> getNbServiceForClient(int clientId) async{
 
 //// Soft delete worker methode
 Future<http.Response> softDeleteWorker(int workerId) async {
-  final url = Uri.parse('$_baseUrl/softDeleteWorker/$workerId');
+  final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  final int? userId = sharedPreferences.getInt('id');
+  final url = Uri.parse('$_baseUrl/$userId/softDeleteWorker/$workerId');
   try {
     final response = await http.delete(
       url,
@@ -368,7 +400,9 @@ Future<http.Response> softDeleteWorker(int workerId) async {
 
 //// Permantly delete worker methode
 Future<http.Response> deleteWorker(int workerId) async {
-  final url = Uri.parse('$_baseUrl/permanentlyDeleteWorker/$workerId');
+  final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  final int? userId = sharedPreferences.getInt('id');
+  final url = Uri.parse('$_baseUrl/$userId/permanentlyDeleteWorker/$workerId');
   try {
     final response = await http.delete(
       url,
@@ -401,7 +435,9 @@ Future <List<Worker>> getServiceWorker(int id) async {
 
 //// affect a worker to a service
   Future<http.Response> addWorkerToService(int serviceId,int workerId,String startDate) async{
-    final url = Uri.parse('$_baseUrl/addWorker/$serviceId');
+      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      final int? userId = sharedPreferences.getInt('id');
+      final url = Uri.parse('$_baseUrl/$userId/addWorker/$serviceId');
     try {
       final workerService = {
         "workerId": workerId,
@@ -420,7 +456,9 @@ Future <List<Worker>> getServiceWorker(int id) async {
 
 /// delete worker from service methode
   Future<http.Response> deleteWorkerFromService(int serviceId,int workerId) async {
-    final url = Uri.parse('$_baseUrl/service/$serviceId/worker/$workerId');
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/service/$serviceId/worker/$workerId');
     try {
       final response = await http.delete(
         url,
@@ -432,4 +470,61 @@ Future <List<Worker>> getServiceWorker(int id) async {
     }
   }
 
+//////////////////////////////////////////////////
+/////////// Notifications management /////////////
+//////////////////////////////////////////////////
+
+//// get newer 10 Notifications 
+  Future<List<Notifications>> getNewerNotifications(int lastId) async {
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/newNotifications/$lastId');
+    try {
+      final response = await http.get(url);
+      if(response.statusCode == 200){
+        final body = jsonDecode(response.body);
+        final result = body.map<Notifications>((json) => Notifications.fromJson(json)).toList();
+        return result ;
+      }
+      else{
+        return [] ;
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to the server: $e');
+    }
+    
+  }
+  
+//// get older 10 Notifications 
+  Future<List<Notifications>> getolderNotifications(int lastId) async {
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/oldNotifications/$lastId');
+    try {
+      final response = await http.get(url);
+      if(response.statusCode == 200){
+        final body = jsonDecode(response.body);
+        final result = body.map<Notifications>((json) => Notifications.fromJson(json)).toList();
+        return result ;
+      }
+      else{
+        return [] ;
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to the server: $e');
+    }
+    
+  }
+
+  //// mark notification as read 
+  Future<void> markNotificationsAsRead(int lastId) async {
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final int? userId = sharedPreferences.getInt('id');
+    final url = Uri.parse('$_baseUrl/$userId/markAsRead/$lastId');
+    try {
+      await http.put(url);
+    } catch (e) {
+      throw Exception('Failed to connect to the server: $e');
+    }
+  }
 }

@@ -189,7 +189,7 @@ class _ServiceCardState extends  State<ServiceCard> {
                           width: 200,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start, 
                             children: [
                               Text(
                                   '${service.client.name.split(' ').first.toUpperCase()} ',

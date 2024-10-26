@@ -5,9 +5,10 @@ import 'package:sns_app/models/User.dart';
 import 'package:sns_app/models/colors.dart';
 import 'package:sns_app/pages/calendar_page.dart';
 import 'package:sns_app/components/new_service.dart';
-import 'package:sns_app/pages/location_detection.dart';
 import 'package:sns_app/pages/location_page.dart';
 import 'package:sns_app/pages/home_page.dart';
+import 'package:sns_app/pages/login_page.dart';
+import 'package:sns_app/pages/notifications_page.dart';
 import 'package:sns_app/pages/team_page.dart';
 
 
@@ -77,7 +78,7 @@ class _HomePageState extends State<Homepage>{
             padding: EdgeInsets.only(right: 5.0),
             child:IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> LocationDetection()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> NotificationsPage()));
             },
             icon: badge.Badge(
                 position: badge.BadgePosition.topEnd(top: -5, end: -6),
@@ -104,8 +105,12 @@ class _HomePageState extends State<Homepage>{
       drawer: selectedIndex ==0 ? Drawer(
         child: Container(
           color: Colors.white,
+          margin: EdgeInsets.only(bottom: 10),
           child: Stack(
-            children:[ ListView(
+            children:[ 
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 FutureBuilder(
                   future: username,
@@ -127,60 +132,36 @@ class _HomePageState extends State<Homepage>{
                           ),
                           decoration: BoxDecoration(
                             color: primaryColor,
-                      
                           ),
                         );
                       },);
                  },),
-                
+                Spacer(),
                 ListTile(
-                  leading: Icon(Iconsax.location),
-                  title: Text('Services'),
-                  onTap: (){},
+                  titleAlignment: ListTileTitleAlignment.center,
+                  title: Text("déconnexion".toUpperCase(),style: TextStyle(
+                    fontSize: 14,
+                    color: primaryColor,
+                    letterSpacing: 3.0,
+                    fontWeight: FontWeight.bold
+                  ),),
+                  leading: Icon(Iconsax.logout4,color: primaryColor600,size: 20,),
+                  onTap: (){
+                    User.custom().deletePrefrences();
+                     Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()),
+                    );
+                  },
                 ),
-                ListTile(
-                  leading: Icon(Iconsax.location),
-                  title: Text('Services'),
-                  onTap: (){},
-                ),
-                ListTile(
-                  leading: Icon(Iconsax.location),
-                  title: Text('Services'),
-                  onTap: (){},
-                ),
-            
-                SizedBox(height: 20),
-                
-                ListTile(
-                  leading: Icon(Iconsax.location),
-                  title: Text('Services'),
-                  onTap: (){},
-                ),
-                ListTile(
-                  leading: Icon(Iconsax.location),
-                  title: Text('Services'),
-                  onTap: (){},
-                ),
-                
-                SizedBox(height: 20),
-            
-                ListTile(
-                  leading: Icon(Iconsax.location),
-                  title: Text('Services'),
-                  onTap: (){},
-                ),
-                ListTile(
-                  leading: Icon(Iconsax.location),
-                  title: Text('Services'),
-                  onTap: (){},
-                ),
+              
               ],
             ),
                  Positioned(
-                  top: 40,
+                  top: 5,
                   right: 5,
                   child: IconButton(
-                    icon: Icon(Iconsax.edit, color: Colors.white),
+                    icon: Icon(Iconsax.setting_2, color: Colors.white),
                     onPressed: () {
                     },
                   ),
